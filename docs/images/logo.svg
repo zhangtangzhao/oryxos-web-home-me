@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B2B"/>
+      <stop offset="50%" style="stop-color:#FF8C4A"/>
+      <stop offset="100%" style="stop-color:#E55A1A"/>
+    </linearGradient>
+    <linearGradient id="hornGrad" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" style="stop-color:#E55A1A"/>
+      <stop offset="100%" style="stop-color:#FF8C4A"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFAA70"/>
+      <stop offset="100%" style="stop-color:#FF6B2B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Oryx (Arabian Oryx) head silhouette — geometric, modern, pure glyph -->
+  <!-- Left horn -->
+  <path d="M70 80 L55 22 L68 42 L78 28 L82 58 Z" fill="url(#hornGrad)" stroke="#D14D0E" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Right horn -->
+  <path d="M130 80 L145 22 L132 42 L122 28 L118 58 Z" fill="url(#hornGrad)" stroke="#D14D0E" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Head — shield/hexagon shape -->
+  <path d="M100 52 L142 68 L148 115 L130 160 L100 175 L70 160 L52 115 L58 68 Z"
+        fill="url(#bodyGrad)" stroke="#D14D0E" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Inner geometric detail — stylized face plate -->
+  <path d="M100 78 L125 90 L128 120 L115 145 L100 155 L85 145 L72 120 L75 90 Z"
+        fill="none" stroke="#FFD0A8" stroke-width="1.8" stroke-linejoin="round" opacity="0.7"/>
+
+  <!-- Eyes — two geometric diamonds -->
+  <polygon points="82,100 90,93 98,100 90,107" fill="#2C1810" stroke="#2C1810" stroke-width="1"/>
+  <polygon points="102,100 110,93 118,100 110,107" fill="#2C1810" stroke="#2C1810" stroke-width="1"/>
+
+  <!-- Nose/muzzle detail -->
+  <path d="M92 125 L100 118 L108 125 L100 132 Z" fill="#2C1810" opacity="0.6"/>
+
+  <!-- Mouth line -->
+  <path d="M88 138 Q100 145 112 138" fill="none" stroke="#D14D0E" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Subtle inner glow circle — represents OS/technology core -->
+  <circle cx="100" cy="110" r="28" fill="none" stroke="#FFAA70" stroke-width="0.8" opacity="0.4"/>
+  <circle cx="100" cy="110" r="18" fill="none" stroke="#FFAA70" stroke-width="0.6" opacity="0.25"/>
+
+  <!-- Corner accent dots — representing nodes/agents -->
+  <circle cx="60" cy="72" r="3" fill="#FFD0A8" opacity="0.6"/>
+  <circle cx="140" cy="72" r="3" fill="#FFD0A8" opacity="0.6"/>
+  <circle cx="55" cy="145" r="2.5" fill="#FFD0A8" opacity="0.4"/>
+  <circle cx="145" cy="145" r="2.5" fill="#FFD0A8" opacity="0.4"/>
+</svg>

@@ -1,0 +1,45 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# VitePress
+website/.vitepress/cache/
+website/.vitepress/dist/
+website/node_modules/
+
+# OryxOS runtime
+.oryxos/
+oryxos.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Sensitive config (API keys must never be committed)
+*.pem
+*.key
+secrets/

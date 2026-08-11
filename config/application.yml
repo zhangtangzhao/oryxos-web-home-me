@@ -1,0 +1,141 @@
+# ============================================================
+# OryxOS — External Configuration
+# ============================================================
+# This file overrides/extend the built-in application.yml inside the JAR.
+# Place it next to the JAR or in ./config/ relative to the working directory.
+#
+# IMPORTANT: This file MUST NOT be committed with real API keys.
+# Use environment variables (${ENV_VAR}) for all sensitive values.
+# See config/application.yml.example for a safe template to commit.
+# ============================================================
+
+spring:
+  application:
+    name: oryxos
+
+  # SQLite datasource — data file location
+  datasource:
+    url: jdbc:sqlite:${oryxos.root:.oryxos}/oryxos.db
+    driver-class-name: org.sqlite.JDBC
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+    open-in-view: false
+
+  # LLM Provider configurations — api-key MUST be set via environment variable
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+
+# Server
+server:
+  port: ${SERVER_PORT:8080}
+
+# ============================================================
+# OryxOS Application Configuration
+# ============================================================
+oryxos:
+  # Working directory root — all runtime data (agents, skills, memory, sessions, DB)
+  # goes under this directory. Override with -Doryxos.root=/path/to/data or
+  # set ORYXOS_ROOT environment variable.
+  root: ${ORYXOS_ROOT:.oryxos}
+
+  # ==========================================================
+  # Provider Definitions
+  # ==========================================================
+  # Each provider entry: name (used in agent profiles), base-url, and the
+  # environment variable that holds its API key.
+  # The "deepseek" provider is the default unless overridden in a profile.
+  #
+  # To add a new provider, append a new entry with name, base-url, and api-key-env.
+  # The api-key itself must NEVER appear in this file.
+  providers:
+    - name: deepseek
+      base-url: https://api.deepseek.com
+      api-key-env: DEEPSEEK_API_KEY
+
+    - name: qwen
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key-env: DASHSCOPE_API_KEY
+
+    - name: kimi
+      base-url: https://api.moonshot.cn/v1
+      api-key-env: MOONSHOT_API_KEY
+
+    - name: openai
+      base-url: https://api.openai.com
+      api-key-env: OPENAI_API_KEY
+
+    - name: codex
+      base-url: ${CODEX_BASE_URL:https://api.openai.com}
+      api-key-env: CODEX_API_KEY
+
+  # ==========================================================
+  # Sandbox — Security Whitelist
+  # ==========================================================
+  # Three categories: file paths, shell commands, HTTP domains.
+  # These are the DEFAULT whitelist entries seeded into SQLite on first start.
+  # Runtime changes via the admin UI or API are persisted to SQLite and
+  # survive restarts.
+  sandbox:
+    # File access — directories Agent tools can read/write
+    file:
+      allowed-paths:
+        - ${oryxos.root:.oryxos}
+        - ${user.dir}
+        - ${java.io.tmpdir}
+
+    # Shell — commands Agent can execute
+    shell:
+      allowed-commands:
+        - ls
+        - cat
+        - echo
+        - grep
+        - find
+        - wc
+        - head
+        - tail
+        - python
+        - python3
+        - node
+        - git
+        - curl
+        - wget
+
+    # HTTP — domains Agent can reach via http_get/http_post
+    # Use "*" to allow all domains (GET requests only; POST still requires explicit entry)
+    http:
+      allowed-domains:
+        - api.github.com
+        - api.openai.com
+        - api.deepseek.com
+        - dashscope.aliyuncs.com
+        - api.moonshot.cn
+        - "*"
+
+  # ==========================================================
+  # Memory Backend
+  # ==========================================================
+  # Options: markdown | sqlite | mem0
+  # - markdown: stores memories as .md files under .oryxos/memory/
+  # - sqlite: stores memories in the SQLite database
+  # - mem0: external Mem0 service (requires MEM0_API_KEY)
+  memory:
+    backend: ${ORYXOS_MEMORY_BACKEND:markdown}
+
+# ============================================================
+# Logging
+# ============================================================
+logging:
+  level:
+    root: INFO
+    com.oryxos: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

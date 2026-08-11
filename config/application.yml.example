@@ -1,0 +1,102 @@
+# ============================================================
+# OryxOS — Example Configuration (safe to commit)
+# ============================================================
+# Copy this file to config/application.yml and fill in your values.
+# This template has all sensitive fields set to empty placeholders.
+#
+# NEVER commit config/application.yml with real API keys!
+# ============================================================
+
+spring:
+  application:
+    name: oryxos
+
+  datasource:
+    url: jdbc:sqlite:${oryxos.root:.oryxos}/oryxos.db
+    driver-class-name: org.sqlite.JDBC
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+    open-in-view: false
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+oryxos:
+  root: ${ORYXOS_ROOT:.oryxos}
+
+  # Add your LLM providers here.
+  # api-key-env tells OryxOS which environment variable holds the key.
+  # Set that variable in your shell before starting:
+  #   export DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxx
+  providers:
+    - name: deepseek
+      base-url: https://api.deepseek.com
+      api-key-env: DEEPSEEK_API_KEY
+
+    - name: qwen
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key-env: DASHSCOPE_API_KEY
+
+    - name: kimi
+      base-url: https://api.moonshot.cn/v1
+      api-key-env: MOONSHOT_API_KEY
+
+    - name: openai
+      base-url: https://api.openai.com
+      api-key-env: OPENAI_API_KEY
+
+    - name: codex
+      base-url: ${CODEX_BASE_URL:https://api.openai.com}
+      api-key-env: CODEX_API_KEY
+
+  sandbox:
+    file:
+      allowed-paths:
+        - ${oryxos.root:.oryxos}
+        - ${user.dir}
+        - ${java.io.tmpdir}
+    shell:
+      allowed-commands:
+        - ls
+        - cat
+        - echo
+        - grep
+        - find
+        - wc
+        - head
+        - tail
+        - python
+        - python3
+        - node
+        - git
+        - curl
+        - wget
+    http:
+      allowed-domains:
+        - api.github.com
+        - api.openai.com
+        - api.deepseek.com
+        - dashscope.aliyuncs.com
+        - api.moonshot.cn
+        - "*"
+
+  memory:
+    backend: ${ORYXOS_MEMORY_BACKEND:markdown}
+
+logging:
+  level:
+    root: INFO
+    com.oryxos: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

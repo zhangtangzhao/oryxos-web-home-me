@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\docs\\\\images\")",
+      "PowerShell(java --version 2>&1)",
+      "PowerShell(mvn --version 2>&1)",
+      "PowerShell($env:JAVA_HOME)",
+      "PowerShell($env:MAVEN_HOME)",
+      "PowerShell($env:JAVA_HOME = \"E:\\\\jdk-21.0.9\"; & \"$env:JAVA_HOME\\\\bin\\\\java\" --version)",
+      "PowerShell($env:JAVA_HOME = \"E:\\\\jdk-21.0.9\"; mvn --version 2>&1)",
+      "PowerShell($env:JAVA_HOME = \"E:\\\\jdk-21.0.9\"; $env:MAVEN_HOME = \"E:\\\\apache-maven-3.9.9\"; $env:PATH = \"$env:MAVEN_HOME\\\\bin;$env:PATH\"; & \"$env:MAVEN_HOME\\\\bin\\\\mvn.cmd\" clean compile -f d:\\\\qoder\\\\oryxos\\\\pom.xml 2>&1)",
+      "PowerShell($env:JAVA_HOME = \"E:\\\\jdk-21.0.9\"; $env:MAVEN_HOME = \"E:\\\\apache-maven-3.9.9\"; $env:PATH = \"$env:MAVEN_HOME\\\\bin;$env:PATH\"; & \"$env:MAVEN_HOME\\\\bin\\\\mvn.cmd\" clean package -DskipTests -f d:\\\\qoder\\\\oryxos\\\\pom.xml 2>&1 | Select-Object -Last 50)",
+      "PowerShell($env:JAVA_HOME = \"E:\\\\jdk-21.0.9\"; & \"$env:JAVA_HOME\\\\bin\\\\java\" -jar d:\\\\qoder\\\\oryxos\\\\oryxos-boot\\\\target\\\\oryxos-boot-1.0.0-SNAPSHOT.jar --version 2>&1 | Select-Object -Last 10)",
+      "PowerShell($env:JAVA_HOME = \"E:\\\\jdk-21.0.9\"; $env:MAVEN_HOME = \"E:\\\\apache-maven-3.9.9\"; $env:PATH = \"$env:MAVEN_HOME\\\\bin;$env:PATH\"; & \"$env:MAVEN_HOME\\\\bin\\\\mvn.cmd\" clean package -DskipTests -f d:\\\\qoder\\\\oryxos\\\\pom.xml -pl oryxos-boot -am 2>&1 | Select-Object -Last 15)"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version 2>&1)",
+      "PowerShell(npm --version 2>&1)",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\.vitepress\\\\theme\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\zh\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\en\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\public\")"
+    ]
+  }
+}

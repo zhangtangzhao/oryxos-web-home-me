@@ -1,0 +1,167 @@
+/* OryxOS Custom Theme — Orange on Pure Black */
+
+:root {
+  /* Primary: orange palette */
+  --vp-c-brand-1: #FF6B2B;
+  --vp-c-brand-2: #FF8C4A;
+  --vp-c-brand-3: #E55A1A;
+  --vp-c-brand-soft: rgba(255, 107, 43, 0.14);
+
+  /* Pure black background */
+  --vp-c-bg: #000000;
+  --vp-c-bg-alt: #0A0A0A;
+  --vp-c-bg-elv: #0D0D0D;
+  --vp-c-bg-soft: #111111;
+
+  /* Text on black */
+  --vp-c-text-1: rgba(255, 255, 255, 0.92);
+  --vp-c-text-2: rgba(255, 255, 255, 0.65);
+  --vp-c-text-3: rgba(255, 255, 255, 0.40);
+
+  /* Borders */
+  --vp-c-border: rgba(255, 255, 255, 0.08);
+  --vp-c-border-hard: rgba(255, 255, 255, 0.12);
+
+  /* Code */
+  --vp-c-code-bg: #1A1A1A;
+
+  /* Custom properties */
+  --oryxos-orange: #FF6B2B;
+  --oryxos-orange-light: #FF8C4A;
+  --oryxos-orange-dark: #E55A1A;
+}
+
+/* Force black background everywhere — no white bars */
+html, body {
+  background-color: #000000 !important;
+}
+
+/* Nav bar — pure black */
+.VPNav {
+  background-color: #000000 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Home hero */
+.VPHero {
+  background-color: #000000 !important;
+}
+
+/* Footer — pure black */
+.VPFooter {
+  background-color: #000000 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Sidebar */
+.VPSidebar {
+  background-color: #000000 !important;
+}
+
+/* Button overrides */
+.VPButton.brand {
+  background-color: var(--oryxos-orange) !important;
+  border-color: var(--oryxos-orange) !important;
+  color: #fff !important;
+}
+
+.VPButton.brand:hover {
+  background-color: var(--oryxos-orange-light) !important;
+}
+
+.VPButton.alt {
+  border-color: var(--oryxos-orange) !important;
+  color: var(--oryxos-orange) !important;
+}
+
+.VPButton.alt:hover {
+  border-color: var(--oryxos-orange-light) !important;
+  color: var(--oryxos-orange-light) !important;
+}
+
+/* Orange accent for links */
+.vp-doc a {
+  color: var(--oryxos-orange);
+}
+
+.vp-doc a:hover {
+  color: var(--oryxos-orange-light);
+}
+
+/* Custom home page gradient text */
+.oryxos-gradient {
+  background: linear-gradient(135deg, #FF6B2B, #FF8C4A, #FFAA70);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Feature grid on black */
+.oryxos-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.oryxos-feature-card {
+  background: #0A0A0A;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.oryxos-feature-card:hover {
+  border-color: var(--oryxos-orange);
+  transform: translateY(-2px);
+}
+
+.oryxos-feature-card h3 {
+  color: var(--oryxos-orange);
+  margin-top: 0;
+}
+
+.oryxos-feature-card p {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Section titles */
+.oryxos-section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 3rem 0 1.5rem;
+  background: linear-gradient(135deg, #FF6B2B, #FFAA70);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Stats / badges row */
+.oryxos-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 2rem 0;
+}
+
+.oryxos-stat {
+  text-align: center;
+}
+
+.oryxos-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--oryxos-orange);
+}
+
+.oryxos-stat-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
