@@ -1,10 +1,11 @@
 name: Deploy VitePress Site to GitHub Pages
 
 on:
-  # Run on push to main branch (only if website files changed)
+  # Run on push (only if website files changed)
   push:
     branches:
       - main
+      - master
     paths:
       - 'website/**'
       - '.github/workflows/deploy-pages.yml'

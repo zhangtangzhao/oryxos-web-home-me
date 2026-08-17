@@ -1,151 +1,188 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620">
-  <defs>
-    <linearGradient id="accessGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#FF6B2B"/>
-      <stop offset="100%" style="stop-color:#E55A1A"/>
-    </linearGradient>
-    <linearGradient id="engineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#2C1810"/>
-      <stop offset="100%" style="stop-color:#1A0E08"/>
-    </linearGradient>
-    <linearGradient id="capabilityGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#E55A1A"/>
-      <stop offset="100%" style="stop-color:#C44A0E"/>
-    </linearGradient>
-    <linearGradient id="baseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#555555"/>
-      <stop offset="100%" style="stop-color:#333333"/>
-    </linearGradient>
-    <filter id="shadow" x="-3%" y="-3%" width="106%" height="112%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.15"/>
-    </filter>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 800" width="1080" height="800" font-family="'Cascadia Mono','JetBrains Mono',Consolas,'Microsoft YaHei','PingFang SC',monospace">
+  <!-- ============ background ============ -->
+  <rect width="1080" height="800" rx="12" fill="#0A0A0A"/>
+  <rect x="0" y="0" width="1080" height="2" rx="1" fill="#FF6B2B" opacity="0.8"/>
 
-  <!-- Background -->
-  <rect width="900" height="620" fill="#F8F8F8" rx="8"/>
+  <!-- title -->
+  <text x="48" y="46" font-family="'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="22" font-weight="700" fill="#F5F0EB">OryxOS · Agent Harness OS</text>
+  <text x="48" y="70" font-size="12" fill="#9C948C">一群 Agent 像进程一样，运行在同一个底座上</text>
+  <text x="1032" y="46" text-anchor="end" font-size="11" fill="#9C948C">github.com/oryx-labs/oryxos</text>
+  <text x="1032" y="64" text-anchor="end" font-size="11" fill="#FF8C4A">Java 21 · Apache 2.0</text>
 
-  <!-- Title -->
-  <text x="450" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2C1810">OryxOS 整体架构</text>
+  <!-- ============ L1 access layer ============ -->
+  <rect x="48" y="100" width="744" height="108" rx="8" fill="#121212" stroke="rgba(255,255,255,0.10)"/>
+  <rect x="68" y="118" width="6" height="16" rx="1" fill="#FF6B2B"/>
+  <text x="84" y="131" font-size="13" font-weight="700" fill="#FF8C4A">接入层 · ACCESS</text>
+  <text x="772" y="131" text-anchor="end" font-size="10" fill="#9C948C">对外说话的入口</text>
 
-  <!-- ===== LAYER 1: 接入层 (Access Layer) ===== -->
-  <rect x="30" y="48" width="840" height="100" rx="6" fill="#FFF5EE" stroke="#FF6B2B" stroke-width="1.5" filter="url(#shadow)"/>
-  <rect x="30" y="48" width="840" height="28" rx="6" fill="url(#accessGrad)"/>
-  <rect x="30" y="62" width="840" height="14" fill="url(#accessGrad)"/>
-  <text x="450" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">接入层 · Access Layer</text>
+  <g>
+    <rect x="68" y="148" width="164" height="44" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="69" y="156" width="3" height="28" rx="1.5" fill="#FF6B2B"/>
+    <text x="154" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">CLI Channel</text>
+    <text x="154" y="182" text-anchor="middle" font-size="10" fill="#9C948C">oryxos chat</text>
+  </g>
+  <g>
+    <rect x="248" y="148" width="164" height="44" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="249" y="156" width="3" height="28" rx="1.5" fill="#FF6B2B"/>
+    <text x="330" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">REST API</text>
+    <text x="330" y="182" text-anchor="middle" font-size="10" fill="#9C948C">10+ 核心端点</text>
+  </g>
+  <g>
+    <rect x="428" y="148" width="164" height="44" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="429" y="156" width="3" height="28" rx="1.5" fill="#FF6B2B"/>
+    <text x="510" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">AgentScheduler</text>
+    <text x="510" y="182" text-anchor="middle" font-size="10" fill="#9C948C">cron 定时触发</text>
+  </g>
+  <g>
+    <rect x="608" y="148" width="164" height="44" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="609" y="156" width="3" height="28" rx="1.5" fill="#FF6B2B"/>
+    <text x="690" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">Web Admin</text>
+    <text x="690" y="182" text-anchor="middle" font-size="10" fill="#9C948C">管理控制台（规划）</text>
+  </g>
 
-  <!-- Access layer boxes -->
-  <rect x="55" y="90" width="170" height="42" rx="4" fill="#FF6B2B" filter="url(#shadow)"/>
-  <text x="140" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFF">CLI Channel</text>
-  <text x="140" y="124" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFE0CC">oryxos chat</text>
+  <!-- arrow L1 -> L2 -->
+  <line x1="420" y1="212" x2="420" y2="228" stroke="#FF6B2B" stroke-width="1.5"/>
+  <polygon points="414,228 426,228 420,236" fill="#FF6B2B"/>
 
-  <rect x="250" y="90" width="190" height="42" rx="4" fill="#FF6B2B" filter="url(#shadow)"/>
-  <text x="345" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFF">Web Service (REST API)</text>
-  <text x="345" y="124" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFE0CC">10 个核心端点</text>
+  <!-- ============ L2 engine layer ============ -->
+  <rect x="48" y="236" width="744" height="140" rx="8" fill="#121212" stroke="rgba(255,255,255,0.10)"/>
+  <rect x="68" y="254" width="6" height="16" rx="1" fill="#FF8C4A"/>
+  <text x="84" y="267" font-size="13" font-weight="700" fill="#FF8C4A">引擎层 · ENGINE</text>
+  <text x="772" y="267" text-anchor="end" font-size="10" fill="#9C948C">自实现 ReAct · 不套框架</text>
 
-  <rect x="465" y="90" width="170" height="42" rx="4" fill="#FF6B2B" filter="url(#shadow)"/>
-  <text x="550" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFF">AgentScheduler</text>
-  <text x="550" y="124" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFE0CC">cron 定时触发</text>
+  <g>
+    <rect x="68" y="284" width="224" height="76" rx="6" fill="#2C1810" stroke="rgba(255,138,74,0.30)"/>
+    <rect x="69" y="292" width="3" height="60" rx="1.5" fill="#FFAA70"/>
+    <text x="188" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#FFAA70">ReActLoop</text>
+    <text x="188" y="328" text-anchor="middle" font-size="10" fill="#E8C4A8">Reason → Act → Observe</text>
+    <text x="188" y="344" text-anchor="middle" font-size="9" fill="#B08868">最大迭代可控</text>
+  </g>
+  <g>
+    <rect x="308" y="284" width="224" height="76" rx="6" fill="#2C1810" stroke="rgba(255,138,74,0.30)"/>
+    <rect x="309" y="292" width="3" height="60" rx="1.5" fill="#FFAA70"/>
+    <text x="428" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#FFAA70">PromptBuilder</text>
+    <text x="428" y="328" text-anchor="middle" font-size="10" fill="#E8C4A8">System + Bootstrap + Memory</text>
+    <text x="428" y="344" text-anchor="middle" font-size="9" fill="#B08868">+ History + Tool 列表</text>
+  </g>
+  <g>
+    <rect x="548" y="284" width="224" height="76" rx="6" fill="#2C1810" stroke="rgba(255,138,74,0.30)"/>
+    <rect x="549" y="292" width="3" height="60" rx="1.5" fill="#FFAA70"/>
+    <text x="672" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#FFAA70">ToolExecutor</text>
+    <text x="672" y="328" text-anchor="middle" font-size="10" fill="#E8C4A8">沙箱白名单校验</text>
+    <text x="672" y="344" text-anchor="middle" font-size="9" fill="#B08868">审计同步落库</text>
+  </g>
 
-  <rect x="660" y="90" width="185" height="42" rx="4" fill="#E55A1A" filter="url(#shadow)"/>
-  <text x="752" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFF">Web Admin</text>
-  <text x="752" y="124" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFE0CC">管理控制台</text>
+  <!-- arrow L2 -> L3 -->
+  <line x1="420" y1="380" x2="420" y2="396" stroke="#FF6B2B" stroke-width="1.5"/>
+  <polygon points="414,396 426,396 420,404" fill="#FF6B2B"/>
 
-  <!-- Layer 1→2 down arrow -->
-  <polygon points="440,152 460,152 450,172" fill="#2C1810"/>
+  <!-- ============ L3 capability layer ============ -->
+  <rect x="48" y="408" width="744" height="144" rx="8" fill="#121212" stroke="rgba(255,255,255,0.10)"/>
+  <rect x="68" y="426" width="6" height="16" rx="1" fill="#FFB86B"/>
+  <text x="84" y="439" font-size="13" font-weight="700" fill="#FFB86B">能力层 · CAPABILITY</text>
+  <text x="772" y="439" text-anchor="end" font-size="10" fill="#9C948C">Agent 的能力供给</text>
 
-  <!-- ===== LAYER 2: 引擎层 (Engine Layer) ===== -->
-  <rect x="160" y="176" width="580" height="120" rx="6" fill="#FFF8F5" stroke="#2C1810" stroke-width="1.5" filter="url(#shadow)"/>
-  <rect x="160" y="176" width="580" height="28" rx="6" fill="url(#engineGrad)"/>
-  <rect x="160" y="190" width="580" height="14" fill="url(#engineGrad)"/>
-  <text x="450" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">引擎层 · Engine Layer</text>
+  <g>
+    <rect x="68" y="456" width="164" height="80" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="69" y="464" width="3" height="64" rx="1.5" fill="#FFB86B"/>
+    <text x="150" y="480" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">Provider 抽象</text>
+    <text x="150" y="500" text-anchor="middle" font-size="10" fill="#9C948C">DeepSeek · 通义 · Kimi</text>
+    <text x="150" y="516" text-anchor="middle" font-size="10" fill="#9C948C">Anthropic · OpenAI · 本地</text>
+  </g>
+  <g>
+    <rect x="248" y="456" width="164" height="80" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="249" y="464" width="3" height="64" rx="1.5" fill="#FFB86B"/>
+    <text x="330" y="480" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">Memory 记忆</text>
+    <text x="330" y="500" text-anchor="middle" font-size="10" fill="#9C948C">会话记忆 SQLite</text>
+    <text x="330" y="516" text-anchor="middle" font-size="10" fill="#9C948C">长期记忆 MEMORY.md</text>
+  </g>
+  <g>
+    <rect x="428" y="456" width="164" height="80" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="429" y="464" width="3" height="64" rx="1.5" fill="#FFB86B"/>
+    <text x="510" y="480" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">Tool + MCP</text>
+    <text x="510" y="500" text-anchor="middle" font-size="10" fill="#9C948C">内置 9 个 Tool</text>
+    <text x="510" y="516" text-anchor="middle" font-size="10" fill="#9C948C">插件三档接入</text>
+  </g>
+  <g>
+    <rect x="608" y="456" width="164" height="80" rx="6" fill="#1C1C1C" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="609" y="464" width="3" height="64" rx="1.5" fill="#FFB86B"/>
+    <text x="690" y="480" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">Sandbox 沙箱</text>
+    <text x="690" y="500" text-anchor="middle" font-size="10" fill="#9C948C">路径 · 命令 · 域名</text>
+    <text x="690" y="516" text-anchor="middle" font-size="10" fill="#9C948C">应用层白名单校验</text>
+  </g>
 
-  <!-- Engine boxes -->
-  <rect x="185" y="218" width="170" height="60" rx="4" fill="#2C1810" filter="url(#shadow)"/>
-  <text x="270" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFAA70">ReActLoop</text>
-  <text x="270" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#CCAA99">核心推理循环引擎</text>
-  <text x="270" y="272" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#AA8877">Reason → Act → Observe</text>
+  <!-- arrow L3 -> L4 -->
+  <line x1="420" y1="556" x2="420" y2="572" stroke="#FF6B2B" stroke-width="1.5"/>
+  <polygon points="414,572 426,572 420,580" fill="#FF6B2B"/>
 
-  <rect x="380" y="218" width="170" height="60" rx="4" fill="#2C1810" filter="url(#shadow)"/>
-  <text x="465" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFAA70">PromptBuilder</text>
-  <text x="465" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#CCAA99">组装每轮 LLM Prompt</text>
-  <text x="465" y="272" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#AA8877">System+Bootstrap+Memory+Tool</text>
+  <!-- ============ L4 infrastructure layer ============ -->
+  <rect x="48" y="584" width="744" height="104" rx="8" fill="#121212" stroke="rgba(255,255,255,0.10)"/>
+  <rect x="68" y="602" width="6" height="16" rx="1" fill="#8A8A8A"/>
+  <text x="84" y="615" font-size="13" font-weight="700" fill="#C4BEB8">基础层 · INFRASTRUCTURE</text>
+  <text x="772" y="615" text-anchor="end" font-size="10" fill="#9C948C">无状态实例 · 状态外置</text>
 
-  <rect x="575" y="218" width="140" height="60" rx="4" fill="#2C1810" filter="url(#shadow)"/>
-  <text x="645" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FFAA70">ToolExecutor</text>
-  <text x="645" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#CCAA99">执行 Tool 调用</text>
-  <text x="645" y="272" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#AA8877">沙箱检查+审计写入</text>
+  <g font-size="11" font-weight="700" fill="#E8E3DE" text-anchor="middle">
+    <rect x="68" y="632" width="128" height="44" rx="6" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+    <text x="132" y="658">Profile / Bootstrap</text>
+    <rect x="212" y="632" width="128" height="44" rx="6" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+    <text x="276" y="658">SQLite 持久化</text>
+    <rect x="356" y="632" width="128" height="44" rx="6" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+    <text x="420" y="658">Session 管理</text>
+    <rect x="500" y="632" width="128" height="44" rx="6" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+    <text x="564" y="658">配置加载</text>
+    <rect x="644" y="632" width="128" height="44" rx="6" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+    <text x="708" y="658">审计与日志</text>
+  </g>
 
-  <!-- Layer 2→3 down arrow -->
-  <polygon points="440,300 460,300 450,320" fill="#E55A1A"/>
+  <!-- ============ right rail : external systems ============ -->
+  <!-- business systems -->
+  <g>
+    <rect x="820" y="148" width="212" height="44" rx="6" fill="#161616" stroke="#FF6B2B" stroke-opacity="0.5" stroke-dasharray="4,3"/>
+    <text x="926" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">业务系统</text>
+    <text x="926" y="182" text-anchor="middle" font-size="10" fill="#9C948C">任何语言 · HTTP 接入</text>
+    <line x1="792" y1="170" x2="820" y2="170" stroke="#FF6B2B" stroke-opacity="0.5" stroke-dasharray="4,3"/>
+  </g>
 
-  <!-- ===== LAYER 3: 能力层 (Capability Layer) ===== -->
-  <rect x="30" y="324" width="840" height="130" rx="6" fill="#FFFAF6" stroke="#E55A1A" stroke-width="1.5" filter="url(#shadow)"/>
-  <rect x="30" y="324" width="840" height="28" rx="6" fill="url(#capabilityGrad)"/>
-  <rect x="30" y="338" width="840" height="14" fill="url(#capabilityGrad)"/>
-  <text x="450" y="343" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">能力层 · Capability Layer</text>
+  <!-- deployment -->
+  <g>
+    <rect x="820" y="236" width="212" height="96" rx="6" fill="#121212" stroke="rgba(255,255,255,0.10)"/>
+    <rect x="821" y="244" width="3" height="80" rx="1.5" fill="#8A8A8A"/>
+    <text x="926" y="262" text-anchor="middle" font-size="12" font-weight="700" fill="#C4BEB8">私有部署</text>
+    <text x="926" y="284" text-anchor="middle" font-size="10" fill="#9C948C">K8s / 虚拟机 / 物理机</text>
+    <text x="926" y="300" text-anchor="middle" font-size="10" fill="#FF8C4A">数据不出域</text>
+  </g>
 
-  <!-- Capability boxes: 4 in a row -->
-  <rect x="55" y="366" width="185" height="72" rx="4" fill="#E55A1A" filter="url(#shadow)"/>
-  <text x="147" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFF">Provider 抽象</text>
-  <text x="147" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">DeepSeek / 通义 / Kimi</text>
-  <text x="147" y="426" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">Anthropic / OpenAI</text>
+  <!-- LLM providers -->
+  <g>
+    <rect x="820" y="456" width="212" height="44" rx="6" fill="#161616" stroke="#FF6B2B" stroke-opacity="0.5" stroke-dasharray="4,3"/>
+    <text x="926" y="474" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">LLM Providers</text>
+    <text x="926" y="490" text-anchor="middle" font-size="10" fill="#9C948C">显式映射 · 运行时切换</text>
+    <line x1="792" y1="478" x2="820" y2="478" stroke="#FF6B2B" stroke-opacity="0.5" stroke-dasharray="4,3"/>
+  </g>
 
-  <rect x="260" y="366" width="185" height="72" rx="4" fill="#E55A1A" filter="url(#shadow)"/>
-  <text x="352" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFF">Memory 记忆</text>
-  <text x="352" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">会话记忆 (SQLite)</text>
-  <text x="352" y="426" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">长期记忆 (MEMORY.md)</text>
+  <!-- MCP servers -->
+  <g>
+    <rect x="820" y="516" width="212" height="44" rx="6" fill="#161616" stroke="#FF6B2B" stroke-opacity="0.5" stroke-dasharray="4,3"/>
+    <text x="926" y="534" text-anchor="middle" font-size="12" font-weight="700" fill="#F5F0EB">外部 MCP Server</text>
+    <text x="926" y="550" text-anchor="middle" font-size="10" fill="#9C948C">复用生态 · 任何语言</text>
+    <line x1="792" y1="538" x2="820" y2="538" stroke="#FF6B2B" stroke-opacity="0.5" stroke-dasharray="4,3"/>
+  </g>
 
-  <rect x="465" y="366" width="185" height="72" rx="4" fill="#E55A1A" filter="url(#shadow)"/>
-  <text x="557" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFF">Tool 工具体系</text>
-  <text x="557" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">内置 9 个 Tool</text>
-  <text x="557" y="426" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">MCP + @Tool Plugin 三档</text>
+  <!-- engineering base -->
+  <g>
+    <rect x="820" y="584" width="212" height="104" rx="6" fill="#121212" stroke="rgba(255,255,255,0.10)"/>
+    <rect x="821" y="592" width="3" height="88" rx="1.5" fill="#8A8A8A"/>
+    <text x="926" y="612" text-anchor="middle" font-size="12" font-weight="700" fill="#C4BEB8">Java 21 · Spring Boot 3</text>
+    <text x="926" y="634" text-anchor="middle" font-size="10" fill="#9C948C">单 JAR 部署 · Virtual Thread</text>
+    <text x="926" y="650" text-anchor="middle" font-size="10" fill="#9C948C">复用现有运维工具链</text>
+    <text x="926" y="670" text-anchor="middle" font-size="10" fill="#FF8C4A">Apache 2.0 开源</text>
+  </g>
 
-  <rect x="670" y="366" width="175" height="72" rx="4" fill="#E55A1A" filter="url(#shadow)"/>
-  <text x="757" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFF">Sandbox 沙箱</text>
-  <text x="757" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">路径 / 命令 / 域名</text>
-  <text x="757" y="426" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFD0A8">应用层白名单校验</text>
-
-  <!-- Layer 3→4 down arrow -->
-  <polygon points="440,458 460,458 450,478" fill="#555555"/>
-
-  <!-- ===== LAYER 4: 基础层 (Base Layer) ===== -->
-  <rect x="30" y="482" width="840" height="90" rx="6" fill="#F5F5F5" stroke="#666666" stroke-width="1.5" filter="url(#shadow)"/>
-  <rect x="30" y="482" width="840" height="28" rx="6" fill="url(#baseGrad)"/>
-  <rect x="30" y="496" width="840" height="14" fill="url(#baseGrad)"/>
-  <text x="450" y="501" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">基础层 · Infrastructure Layer</text>
-
-  <!-- Base layer boxes -->
-  <rect x="55" y="522" width="140" height="38" rx="4" fill="#666666" filter="url(#shadow)"/>
-  <text x="125" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#FFF">Profile / Bootstrap</text>
-
-  <rect x="210" y="522" width="140" height="38" rx="4" fill="#666666" filter="url(#shadow)"/>
-  <text x="280" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#FFF">SQLite 持久化</text>
-
-  <rect x="365" y="522" width="140" height="38" rx="4" fill="#666666" filter="url(#shadow)"/>
-  <text x="435" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#FFF">Session 管理</text>
-
-  <rect x="520" y="522" width="150" height="38" rx="4" fill="#666666" filter="url(#shadow)"/>
-  <text x="595" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#FFF">ConfigLoader 配置</text>
-
-  <rect x="685" y="522" width="160" height="38" rx="4" fill="#666666" filter="url(#shadow)"/>
-  <text x="765" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#FFF">审计 &amp; 日志</text>
-
-  <!-- External connections on the right -->
-  <!-- LLM Providers -->
-  <text x="880" y="390" font-family="Arial, sans-serif" font-size="9" fill="#999" transform="rotate(90, 880, 390)">LLM 厂商 API</text>
-  <line x1="888" y1="300" x2="888" y2="460" stroke="#E55A1A" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
-
-  <!-- MCP Servers -->
-  <text x="895" y="390" font-family="Arial, sans-serif" font-size="9" fill="#999" transform="rotate(90, 895, 390)">外部 MCP Server</text>
-  <line x1="903" y1="300" x2="903" y2="460" stroke="#2C1810" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
-
-  <!-- Legend -->
-  <rect x="30" y="585" width="12" height="12" rx="2" fill="#FF6B2B"/>
-  <text x="48" y="595" font-family="Arial, sans-serif" font-size="9" fill="#555">接入层</text>
-  <rect x="100" y="585" width="12" height="12" rx="2" fill="#2C1810"/>
-  <text x="118" y="595" font-family="Arial, sans-serif" font-size="9" fill="#555">引擎层</text>
-  <rect x="170" y="585" width="12" height="12" rx="2" fill="#E55A1A"/>
-  <text x="188" y="595" font-family="Arial, sans-serif" font-size="9" fill="#555">能力层</text>
-  <rect x="240" y="585" width="12" height="12" rx="2" fill="#666666"/>
-  <text x="258" y="595" font-family="Arial, sans-serif" font-size="9" fill="#555">基础层</text>
+  <!-- ============ north star formula strip ============ -->
+  <rect x="48" y="716" width="984" height="56" rx="8" fill="#121212" stroke="rgba(255,107,43,0.35)"/>
+  <rect x="48" y="716" width="4" height="56" rx="2" fill="#FF6B2B"/>
+  <text x="76" y="738" font-size="10" letter-spacing="3" fill="#FF8C4A">NORTH STAR · 北极星公式</text>
+  <text x="76" y="758" font-size="15" font-weight="700">
+    <tspan fill="#F5F0EB">自然语言(md)</tspan><tspan fill="#FF6B2B"> + </tspan><tspan fill="#F5F0EB">Memory</tspan><tspan fill="#FF6B2B"> + </tspan><tspan fill="#F5F0EB">Tool</tspan><tspan fill="#FF6B2B"> + </tspan><tspan fill="#F5F0EB">MCP</tspan><tspan fill="#FF6B2B"> + </tspan><tspan fill="#F5F0EB">Skill</tspan><tspan fill="#FF6B2B"> + </tspan><tspan fill="#F5F0EB">知识库</tspan><tspan fill="#FF6B2B"> + </tspan><tspan fill="#F5F0EB">Notify</tspan><tspan fill="#FF6B2B">  =  </tspan><tspan fill="#FFB86B">一个 Agent</tspan>
+  </text>
 </svg>

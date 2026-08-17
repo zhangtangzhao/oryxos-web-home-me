@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'OryxOS',
-  description: 'Enterprise Agent OS — Java Native, Private, Auditable',
+  description: 'Agent Harness OS — run a herd of agents on one private, auditable base. Java native, MCP & A2A ready.',
   base: '/oryxos/',
   lang: 'en-US',
   head: [

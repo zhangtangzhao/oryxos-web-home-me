@@ -1,12 +1,14 @@
 <p align="center">
-  <img src="docs/images/logo.svg" alt="OryxOS Logo" width="120">
+  <img src="docs/images/logo.svg" alt="OryxOS Logo" width="140">
 </p>
 
 <h1 align="center">OryxOS</h1>
 
 <p align="center">
-  <strong>企业级 Agent OS · Java 原生 · 私有可控 · 全链路可审计</strong>
+  <strong>Agent Harness OS —— 让一群 Agent 像进程一样跑在操作系统上</strong>
 </p>
+
+<p align="center">Java 原生 · 私有部署 · 全链路可审计</p>
 
 <p align="center">
   <a href="https://github.com/oryx-labs/oryxos/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
@@ -17,55 +19,82 @@
 
 ---
 
-## 什么是 OryxOS？
-
-**OryxOS** 是基于 Java 21 实现的面向企业场景的 **Agent OS**。它装在企业自己的 K8s 或服务器上，作为统一底座运行各种业务 Agent（运维助手、客服助手、HR 助手、知识管理助手等），共享一套渠道接入、模型路由、工具调用、记忆系统、沙箱执行能力。数据完全留在企业自己的基础设施，不锁任何云生态。
-
 > **你用一句自然语言发布一个任务 → 底座把它拆解 → 组织一支 Agent 团队 → 多个 Agent 分工协作 → 交付一个结果。**
 
-### 为什么需要 OryxOS？
+## OryxOS 是什么
 
-每家公司都有该交给 Agent 的活，但 Agent 大多还停在 demo，卡在四道门槛上：
+OryxOS 是开源的 **Agent Harness OS**（Agent 运行骨架操作系统），装在企业自己的 K8s 或服务器上，作为统一底座运行各种业务 Agent —— 运维助手、客服助手、HR 助手、知识管理助手 —— 共享一套渠道接入、模型路由、工具调用、记忆系统、沙箱执行与审计。
 
-1. **定义一个 Agent 要写代码** — 最懂业务的人反而做不了
-2. **云平台要把数据拿走** — 合规过不去
-3. **执行是黑盒** — 没审计、没白名单、没审批，企业不敢上生产
-4. **跑一个容易、跑一群难** — 没有人把「一群 Agent 的操作系统」这一层交给你
+**agent harness** 是套在模型外面、把模型变成能干活的 Agent 的那层脚手架：驱动 Reason → Act → Observe 的循环、它能调用的工具与执行机制、每次调用前组装好的上下文、它积累的记忆、约束它的沙箱、记录它做过什么的审计。裸模型只会生成文本，harness 才让它可靠、安全地「做事」。
 
-OryxOS 一次拆掉这四道门槛：**自然语言定义、私有部署、全链路审计加沙箱、以及为一整队 Agent 准备的生命周期与治理。**
+**北极星公式：**
 
-![OryxOS Architecture](docs/images/architecture.svg)
+```
+自然语言(md) + Memory + Tool + MCP(Connector) + Skill + 知识库 + Notify = 一个 Agent
+```
+
+一个目录定义一个 Agent，一个底座运行一群 Agent，私有部署，数据不出域。
+
+## 为什么是 Harness OS，而不是又一个 Agent
+
+Agent runtime 让**一个** Agent 跑起来；Agent Harness OS 在其上管理**一群** Agent：多个 Agent 的生命周期、统一的对外渠道与对内接入、统一的记忆、治理与审计。借操作系统类比 —— runtime 像单个进程的执行环境，Harness OS 像管理一群进程、调度资源、提供共享服务的那一层。
+
+更深一层的判断：**让 Agent 在生产环境可靠工作，瓶颈通常不在模型本身，而在 Agent 的运行环境。** 能不能拿到对的上下文、有没有受控的工具、调用能不能被隔离和审计 —— OryxOS 做的就是这个让一群 Agent 可靠运行的底座本身。
+
+## 四道门槛，一次拆掉
+
+Agent 大多停在 demo，卡在四道门槛上：
+
+| 门槛 | OryxOS 的答案 |
+|------|--------------|
+| 定义一个 Agent 要写代码，最懂业务的人反而做不了 | **一个目录 = 一个 Agent** —— 一份 `AGENT.md` 即定义，不写代码 |
+| 云平台要把数据拿走，合规过不去 | **私有部署，数据不出域** —— 装在自己的 K8s / VM / 物理机 |
+| 执行是黑盒，没审计没白名单，不敢上生产 | **全链路审计 + 强制沙箱** —— 白名单校验，调用落库，从第一天起 |
+| 跑一个容易、跑一群难 | **一群 Agent 的生命周期与治理** —— 并存、调度、REST 治理接口 |
+
+## 一分钟看懂：一次 ReAct 排障
+
+```text
+$ java -jar oryxos.jar chat --profile ops
+> 线上订单服务最近一小时为什么频繁超时？
+
+● Reason   先查订单服务日志，再核对数据库连接池状态
+▸ Act      shell → kubectl logs orders-7f9c --tail 200
+◦ Observe  命中 37 次 timeout，伴随连接池等待告警
+
+● Reason   拉取数据库监控，确认连接池水位
+▸ Act      http_get → monitor.internal/api/db/pool
+◦ Observe  active 98 / max 100，连接池接近打满
+
+✔ 根因：DB 连接池耗尽，导致订单服务大面积超时。
+  建议：连接池上限 100 → 200，并治理未释放连接的慢查询。
+```
+
+LLM 决定调哪个工具，OryxOS 经沙箱白名单校验后执行、回填结果、继续推理 —— 每一步都有记录，循环行为完全可控。
 
 ## 五大核心能力
 
 | 能力 | 说明 |
 |------|------|
-| 🤖 **对接 LLM** | Provider 抽象统一对接主流大模型（DeepSeek、通义、Kimi、智谱、Anthropic、OpenAI），Agent 不感知具体厂商，运行时切换无锁定 |
-| 🧠 **ReAct 循环** | 自实现推理引擎：Reason → Act → Observe，LLM 思考是否调工具、调哪个，OryxOS 执行后回填结果，循环行为完全可控 |
-| 💾 **记忆系统** | 会话记忆 + 长期记忆两层，跨对话保留用户偏好、项目背景、关键决策，让 Agent 越用越懂你 |
-| 🔧 **工具体系** | 内置文件/Shell/HTTP/通知 9 个 Tool + Plugin Tool 三档接入（零代码/MCP/@Tool 注解），按门槛自由选择 |
-| 🌐 **Web Service** | 完整 REST API 对外暴露所有能力，任何开发语言都能集成，覆盖会话管理、Agent 调用、系统状态 |
+| 🤖 **对接 LLM** | Provider 抽象统一对接 DeepSeek、通义、Kimi、智谱、Anthropic、OpenAI 与本地推理。Agent 不感知厂商，运行时切换无锁定 |
+| 🧠 **ReAct 循环** | 自实现推理引擎：Reason → Act → Observe，直到交付或达到最大迭代。不套外部 Agent 框架，机制完全可控 |
+| 💾 **记忆系统** | 会话记忆（SQLite）+ 长期记忆（MEMORY.md）两层，跨对话记住偏好、背景与决策，越用越懂你 |
+| 🔧 **工具体系** | 内置 9 个 Tool（文件 / Shell / HTTP / 记忆 / 通知）+ 三档插件接入：零代码（MCP 复用）、轻代码（自写 MCP server）、重代码（`@Tool` 注解） |
+| 🌐 **对外服务** | 完整 REST API 暴露所有能力，覆盖会话管理、Agent 调用、Profile / Memory / Tool 查询、系统状态，任何语言可集成 |
 
 ## 核心特性
 
-- 🤖 **一个目录 = 一个 Agent** — 一个包含 `AGENT.md` 的目录定义一个 Agent，不用写代码，多个 Agent 同实例并存
-- ☕ **Java 原生** — 基于 Java 与 JDK 21，单可执行 JAR 单二进制部署，复用现有 Java 运维工具链
-- 🔒 **私有可控** — 装在企业自己的 K8s、虚拟机或物理机上，数据不出域，不锁任何云
-- 🛡️ **安全隔离** — 工具调用经文件/命令/网络白名单校验，强制沙箱隔离，凭证走环境变量不落地，全链路可审计
-- 🧠 **自实现 ReAct** — 核心推理循环自己实现，不套外部 Agent 框架，机制完全可控
-- 🔌 **对接开放标准** — 工具用 MCP、Agent 协作用 A2A、Agent 目录借 Anthropic Agent Skills 形态，与生态协同
-- 🧩 **三档工具扩展** — 从零代码 Agent 目录到自写 MCP server 到原生方法，按门槛自由选择
-- 💾 **跨对话记忆** — 会话加长期两层记忆，让 Agent 记得住上下文
-- 🌐 **无状态可扩展** — 运行实例无状态、状态外置，从架构起为走向分布式留好路
+- 🤖 **一个目录 = 一个 Agent** —— 包含 `AGENT.md` 的目录即定义，多 Agent 同实例并存
+- ☕ **Java 原生** —— JDK 21 + Spring Boot 3.x，单 JAR 部署，复用现有 Java 运维工具链
+- 🔒 **私有可控** —— 数据不出域，不锁任何云
+- 🛡️ **安全是地基不是补丁** —— 文件 / 命令 / 域名白名单，强制沙箱，凭证走环境变量不落地，全链路可审计
+- 🧠 **自实现核心，可控优先** —— 推理循环自己实现，协议适配复用成熟库
+- 🔌 **对接开放标准** —— 工具用 MCP、协作用 A2A、Agent 目录借 Anthropic Agent Skills 形态，不另立协议
+- 🌐 **无状态可扩展** —— 实例无状态、状态外置，从架构起为分布式留好路
 
 ## 快速开始
 
-### 环境要求
-
-- JDK 21+
-- Maven 3.9+
-
-### 构建
+**环境要求**：JDK 21+，Maven 3.9+
 
 ```bash
 git clone https://github.com/oryx-labs/oryxos.git
@@ -73,7 +102,7 @@ cd oryxos
 mvn clean package -DskipTests
 ```
 
-### 5 分钟快速体验
+**5 分钟体验：**
 
 ```bash
 # 1. 初始化工作区
@@ -89,7 +118,7 @@ export DEEPSEEK_API_KEY=sk-xxx
 java -jar oryxos-boot/target/oryxos-boot-1.0.0-SNAPSHOT.jar chat --profile weather
 ```
 
-### 启动 API 服务
+**启动 API 服务：**
 
 ```bash
 java -jar oryxos-boot/target/oryxos-boot-1.0.0-SNAPSHOT.jar serve --port 8080
@@ -97,7 +126,11 @@ java -jar oryxos-boot/target/oryxos-boot-1.0.0-SNAPSHOT.jar serve --port 8080
 
 访问 `http://localhost:8080/api/v1/health` 确认服务正常。
 
-## 项目结构
+## 架构
+
+四层解耦：接入层（CLI / REST / 调度）→ 引擎层（ReActLoop / PromptBuilder / ToolExecutor）→ 能力层（Provider / Memory / Tool+MCP / Sandbox）→ 基础层（Profile / SQLite / Session / 审计）。安全横贯每一层。
+
+![OryxOS Architecture](docs/images/architecture.svg)
 
 ```
 oryxos/
@@ -115,64 +148,37 @@ oryxos/
 └── scripts/               # 构建与部署脚本
 ```
 
-## API 端点
+**核心 API（10 个端点）：**
 
 | 端点 | 说明 |
 |------|------|
-| `POST /api/v1/sessions` | 创建会话 |
-| `POST /api/v1/sessions/{id}/messages` | 发消息 |
-| `GET /api/v1/sessions/{id}` | 查历史 |
-| `DELETE /api/v1/sessions/{id}` | 归档会话 |
-| `POST /api/v1/agents/{name}/invoke` | 无状态调用 |
-| `GET /api/v1/profiles` | 列 Profile |
-| `GET /api/v1/memory` | 查长期记忆 |
-| `GET /api/v1/tools` | 列可用 Tool |
-| `GET /api/v1/health` | 健康检查 |
-| `GET /api/v1/info` | 运行信息 |
-
-## 架构
-
-OryxOS 整体分四层：
-
-1. **接入层** — CLI Channel、REST API、定时任务调度器
-2. **引擎层** — ReActLoop、PromptBuilder、ToolExecutor
-3. **能力层** — Provider、Memory、Tool
-4. **基础层** — Profile/Bootstrap 加载、Session 存储、SQLite、配置管理
-
-## 设计原则
-
-- **底座优先于 Agent** — 最重要的交付不是某个强大的 Agent，而是让任意 Agent 都能可靠运行的环境
-- **自实现核心，可控优先** — 核心推理循环自己实现，底层模型协议适配复用成熟库
-- **配置即 Agent** — 一个 Agent 由一份 `AGENT.md` 定义，而不是由代码写出
-- **对接开放标准** — 工具用 MCP、协作用 A2A、技能用开放格式
-- **安全是地基不是补丁** — 工具来源受控、最小权限、强制沙箱、凭证不落地、全链路可审计
+| `POST /api/v1/sessions` · `POST /api/v1/sessions/{id}/messages` · `GET /api/v1/sessions/{id}` · `DELETE /api/v1/sessions/{id}` | 会话管理 |
+| `POST /api/v1/agents/{name}/invoke` | 无状态调用 Agent |
+| `GET /api/v1/profiles` · `GET /api/v1/memory` · `GET /api/v1/tools` | Profile / 记忆 / 工具查询 |
+| `GET /api/v1/health` · `GET /api/v1/info` | 系统状态 |
 
 ## 路线图
 
-| 阶段 | 重点 |
-|------|------|
-| **阶段一（当前）** | 单机运行时内核：五大核心能力 + 多 Agent 并存 + REST API + MCP |
-| **阶段二（规划）** | 底座分布式：节点无状态化、多副本部署、高可用 |
-| **阶段三（愿景）** | 跨节点 Agent 协作：A2A 通信底座、跨节点发现、委托、协同 |
+慢就是快，克制且聚焦：先把单机运行时内核做扎实，再在它之上生长出分布式能力。
 
-## 技术栈
+- **阶段一（当前）单机运行时内核** —— 五大核心能力跑通：配置即 Agent、多 Agent 并存、REST API、对接 MCP
+- **阶段二（规划）底座分布式** —— 节点无状态化、状态外置、多副本部署、高可用
+- **阶段三（愿景）跨节点 Agent 协作** —— Agent 通信底座、对接 A2A、跨节点发现 / 委托 / 可靠异步协同
+- **横向能力（伴随各阶段逐步补齐）** —— 多租户、SSO、完整审计、工具策略、可观测、Web 管理
 
-- **JDK 21** + Spring Boot 3.x（Virtual Thread）
-- **Spring AI Alibaba**（LLM Provider 抽象与协议转换）
-- **自实现 ReAct Loop**（Agent 核心引擎）
-- **Spring MVC**（REST API）
-- **Picocli**（CLI 工具）
-- **SQLite + Spring Data JPA**（持久化）
-- **MCP Java SDK**（外部工具集成）
-- **VitePress**（官网文档）
+## 设计原则
 
-## 许可证
+- **底座优先于 Agent** —— 最重要的交付不是某个强大的 Agent，而是让任意 Agent 都能可靠运行的环境
+- **自实现核心，可控优先** —— 核心推理循环自己实现，底层协议适配复用成熟库，不重复造轮子
+- **配置即 Agent** —— Agent 由一份配置定义，而不是由代码写出
+- **对接开放标准** —— 工具用 MCP、协作用 A2A、技能用开放格式
+- **无状态实例，状态外置** —— 从单机平滑走向分布式的前提
+- **安全是地基不是补丁** —— 工具来源受控、最小权限、强制沙箱、凭证不落地、全链路可审计
+- **分阶段克制** —— 当前只做运行时内核的最小完备集，每次架构升级都用真实使用数据证明其必要性
 
-[Apache License 2.0](LICENSE)
+## 许可证与社区
 
-## 社区
-
-OryxOS 是 [oryx-labs](https://github.com/oryx-labs) 旗下的开源项目。欢迎通过 Issue、PR 和 Discussions 参与贡献。
+[Apache License 2.0](LICENSE) · OryxOS 是 [oryx-labs](https://github.com/oryx-labs) 旗下的开源项目，长期目标是走进 Apache 基金会。欢迎通过 Issue、PR 和 Discussions 参与贡献。
 
 ---
 

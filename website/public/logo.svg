@@ -1,51 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="OryxOS logo">
   <defs>
-    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FF6B2B"/>
-      <stop offset="50%" style="stop-color:#FF8C4A"/>
-      <stop offset="100%" style="stop-color:#E55A1A"/>
+    <linearGradient id="oryx-head" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF9A4D"/>
+      <stop offset="1" stop-color="#E8530F"/>
     </linearGradient>
-    <linearGradient id="hornGrad" x1="0%" y1="100%" x2="50%" y2="0%">
-      <stop offset="0%" style="stop-color:#E55A1A"/>
-      <stop offset="100%" style="stop-color:#FF8C4A"/>
-    </linearGradient>
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFAA70"/>
-      <stop offset="100%" style="stop-color:#FF6B2B"/>
+    <linearGradient id="oryx-horn" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#FF9A4D"/>
+      <stop offset="1" stop-color="#FFC58F"/>
     </linearGradient>
   </defs>
 
-  <!-- Oryx (Arabian Oryx) head silhouette — geometric, modern, pure glyph -->
-  <!-- Left horn -->
-  <path d="M70 80 L55 22 L68 42 L78 28 L82 58 Z" fill="url(#hornGrad)" stroke="#D14D0E" stroke-width="1.5" stroke-linejoin="round"/>
-  <!-- Right horn -->
-  <path d="M130 80 L145 22 L132 42 L122 28 L118 58 Z" fill="url(#hornGrad)" stroke="#D14D0E" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Horns: long, straight, parallel — the oryx signature -->
+  <polygon points="104,74 88,80 68,14 84,10" fill="url(#oryx-horn)"/>
+  <polygon points="136,74 152,80 172,14 156,10" fill="url(#oryx-horn)"/>
 
-  <!-- Head — shield/hexagon shape -->
-  <path d="M100 52 L142 68 L148 115 L130 160 L100 175 L70 160 L52 115 L58 68 Z"
-        fill="url(#bodyGrad)" stroke="#D14D0E" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Head: geometric shield -->
+  <path d="M120 48 L152 60 L168 112 L152 162 L120 208 L88 162 L72 112 L88 60 Z"
+        fill="url(#oryx-head)"/>
 
-  <!-- Inner geometric detail — stylized face plate -->
-  <path d="M100 78 L125 90 L128 120 L115 145 L100 155 L85 145 L72 120 L75 90 Z"
-        fill="none" stroke="#FFD0A8" stroke-width="1.8" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Inner keyline -->
+  <path d="M120 58 L147 69 L161 112 L147 158 L120 198 L93 158 L79 112 L93 69 Z"
+        fill="none" stroke="#FFDDBE" stroke-width="2" opacity="0.55" stroke-linejoin="round"/>
 
-  <!-- Eyes — two geometric diamonds -->
-  <polygon points="82,100 90,93 98,100 90,107" fill="#2C1810" stroke="#2C1810" stroke-width="1"/>
-  <polygon points="102,100 110,93 118,100 110,107" fill="#2C1810" stroke="#2C1810" stroke-width="1"/>
+  <!-- Eye markings -->
+  <polygon points="97,101 114,109 112,116 95,108" fill="#3A1D0A"/>
+  <polygon points="143,101 126,109 128,116 145,108" fill="#3A1D0A"/>
 
-  <!-- Nose/muzzle detail -->
-  <path d="M92 125 L100 118 L108 125 L100 132 Z" fill="#2C1810" opacity="0.6"/>
-
-  <!-- Mouth line -->
-  <path d="M88 138 Q100 145 112 138" fill="none" stroke="#D14D0E" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
-
-  <!-- Subtle inner glow circle — represents OS/technology core -->
-  <circle cx="100" cy="110" r="28" fill="none" stroke="#FFAA70" stroke-width="0.8" opacity="0.4"/>
-  <circle cx="100" cy="110" r="18" fill="none" stroke="#FFAA70" stroke-width="0.6" opacity="0.25"/>
-
-  <!-- Corner accent dots — representing nodes/agents -->
-  <circle cx="60" cy="72" r="3" fill="#FFD0A8" opacity="0.6"/>
-  <circle cx="140" cy="72" r="3" fill="#FFD0A8" opacity="0.6"/>
-  <circle cx="55" cy="145" r="2.5" fill="#FFD0A8" opacity="0.4"/>
-  <circle cx="145" cy="145" r="2.5" fill="#FFD0A8" opacity="0.4"/>
+  <!-- Muzzle -->
+  <polygon points="120,168 132,180 120,192 108,180" fill="#3A1D0A"/>
 </svg>
