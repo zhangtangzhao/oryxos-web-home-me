@@ -68,10 +68,13 @@ public class Profile {
     public static class Settings {
         private int maxIterations = 10;
         private int maxHistoryTurns = 20;
+        private int sessionTimeoutMinutes = 30;
         public int getMaxIterations() { return maxIterations; }
         public void setMaxIterations(int maxIterations) { this.maxIterations = maxIterations; }
         public int getMaxHistoryTurns() { return maxHistoryTurns; }
         public void setMaxHistoryTurns(int maxHistoryTurns) { this.maxHistoryTurns = maxHistoryTurns; }
+        public int getSessionTimeoutMinutes() { return sessionTimeoutMinutes; }
+        public void setSessionTimeoutMinutes(int sessionTimeoutMinutes) { this.sessionTimeoutMinutes = sessionTimeoutMinutes; }
     }
 
     // Getters and setters

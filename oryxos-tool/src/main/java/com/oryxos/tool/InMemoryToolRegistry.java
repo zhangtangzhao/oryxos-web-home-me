@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * In-memory implementation of ToolRegistry.
@@ -37,9 +36,20 @@ public class InMemoryToolRegistry implements ToolRegistry {
         if (toolNames == null || toolNames.isEmpty()) {
             return new ArrayList<>();
         }
-        return toolNames.stream()
-                .map(tools::get)
-                .filter(t -> t != null)
-                .collect(Collectors.toList());
+        List<OryxTool> result = new ArrayList<>();
+        for (String name : toolNames) {
+            OryxTool exact = tools.get(name);
+            if (exact != null) {
+                result.add(exact);
+                continue;
+            }
+            // MCP server-name enablement: <server> expands to all its <server>__<tool> entries
+            String prefix = name + "__";
+            tools.values().stream()
+                    .filter(t -> t.getName().startsWith(prefix))
+                    .sorted(java.util.Comparator.comparing(OryxTool::getName))
+                    .forEach(result::add);
+        }
+        return result;
     }
 }

@@ -1,0 +1,10 @@
+# 每日天气 Demo —— 追加到 config/application.yml 的 oryxos: 段下
+# （默认配置 http.allowed-domains 已含 "*"，此片段用于收紧白名单的生产环境）
+oryxos:
+  sandbox:
+    http:
+      allowed-domains:
+        - api.open-meteo.com   # Open-Meteo 天气接口
+        - open.feishu.cn       # 按实际 IM Webhook 域名调整（如 oapi.dingtalk.com / qyapi.weixin.qq.com）
+  notify:
+    webhook-url: ${ORYXOS_NOTIFY_WEBHOOK_URL:}

@@ -6,7 +6,19 @@
       "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\.vitepress\\\\theme\")",
       "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\zh\")",
       "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\en\")",
-      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\public\")"
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"d:\\\\qoder\\\\oryxos\\\\website\\\\public\")",
+      "Bash(npm -v)",
+      "Bash(npm ci *)",
+      "Bash(npm run *)",
+      "Bash(npx vitepress *)",
+      "Bash(curl -s -o /dev/null -w \"/: %{http_code}\\\\n\" http://localhost:4173/oryxos/)",
+      "Bash(curl -s -o /dev/null -w \"/zh/: %{http_code}\\\\n\" http://localhost:4173/oryxos/zh/)",
+      "Bash(curl -s -o /dev/null -w \"logo: %{http_code}\\\\n\" http://localhost:4173/oryxos/logo.svg)",
+      "Bash(curl -s -o /dev/null -w \"arch: %{http_code}\\\\n\" http://localhost:4173/oryxos/architecture.svg)",
+      "Bash(git -C \"d:\\\\test-project\\\\oryxos\" status --short)",
+      "Bash(git -C \"d:\\\\test-project\\\\oryxos\" log --oneline -3)",
+      "Bash(git -C \"d:\\\\test-project\\\\oryxos\" branch --show-current)",
+      "Bash(git -C \"d:\\\\test-project\\\\oryxos\" ls-files website/public)"
     ]
   }
 }

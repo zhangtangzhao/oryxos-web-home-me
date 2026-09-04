@@ -3,16 +3,21 @@ package com.oryxos.tool;
 import com.oryxos.core.Sandbox;
 import com.oryxos.core.SandboxViolationException;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Core-phase sandbox implementation using application-layer whitelist checks.
- * Checks file paths, shell commands, and HTTP URLs against configured whitelists.
+ * Checks file paths, shell commands, and HTTP URLs against configured
+ * whitelists. Empty whitelist for a category = deny all for that category
+ * (minimal privilege, FR-013/SC-006).
  */
 public class WhitelistSandbox implements Sandbox {
+
+    /** Shell metacharacters that can smuggle a second command past a first-token check. */
+    private static final String COMMAND_SEPARATORS = "[;|&\n`]";
 
     private final Set<String> allowedPaths;
     private final Set<String> allowedCommands;
@@ -42,36 +47,79 @@ public class WhitelistSandbox implements Sandbox {
 
     private void checkFilePath(String filePath) {
         Path normalized = Paths.get(filePath).normalize().toAbsolutePath();
-        String pathStr = normalized.toString();
-        boolean allowed = allowedPaths.stream().anyMatch(p -> {
-            Path allowedPath = Paths.get(p).normalize().toAbsolutePath();
-            return pathStr.startsWith(allowedPath.toString());
-        });
-        if (!allowed) {
-            throw new SandboxViolationException("File path not in allowed paths: " + filePath);
+        // Resolve symlinks when the target exists so a link cannot escape the whitelist
+        if (normalized.toFile().exists()) {
+            try {
+                normalized = normalized.toRealPath();
+            } catch (IOException ignored) {
+                // fall back to the normalized absolute path
+            }
         }
+        String pathStr = normalized.toString();
+        for (String p : allowedPaths) {
+            Path allowedPath = Paths.get(p).normalize().toAbsolutePath();
+            if (allowedPath.toFile().exists()) {
+                try {
+                    allowedPath = allowedPath.toRealPath();
+                } catch (IOException ignored) {
+                    // fall back to the normalized absolute path
+                }
+            }
+            if (pathStr.startsWith(allowedPath.toString())) {
+                return;
+            }
+        }
+        throw new SandboxViolationException("文件路径不在白名单内: " + filePath);
     }
 
     private void checkShellCommand(String command) {
-        String firstToken = command.trim().split("\\s+")[0];
-        if (!allowedCommands.contains(firstToken)) {
-            throw new SandboxViolationException("Shell command not allowed: " + firstToken);
+        if (allowedCommands.isEmpty()) {
+            throw new SandboxViolationException("Shell 命令白名单为空，所有命令均被拒绝");
+        }
+        // Every segment split by shell separators must itself start with a whitelisted
+        // command — blocks `git status && rm -rf /` style smuggling (SC-006).
+        String[] segments = command.split(COMMAND_SEPARATORS);
+        for (String segment : segments) {
+            String trimmed = segment.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            String firstToken = trimmed.split("\\s+")[0];
+            if (!allowedCommands.contains(firstToken)) {
+                throw new SandboxViolationException("Shell 命令不在白名单内: " + firstToken);
+            }
         }
     }
 
     private void checkHttpUrl(String url) {
         try {
-            String host = new java.net.URI(url).getHost();
+            java.net.URI uri = new java.net.URI(url);
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
             if (host == null) {
-                throw new SandboxViolationException("Cannot parse host from URL: " + url);
+                throw new SandboxViolationException("无法从 URL 解析主机名: " + url);
             }
-            boolean allowed = allowedDomains.stream().anyMatch(d ->
-                host.equals(d) || host.endsWith("." + d) || d.equals("*"));
-            if (!allowed) {
-                throw new SandboxViolationException("HTTP domain not in whitelist: " + host);
+            if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+                throw new SandboxViolationException("仅允许 http/https 请求: " + url);
             }
+            for (String d : allowedDomains) {
+                if ("*".equals(d) || host.equalsIgnoreCase(d) || host.toLowerCase().endsWith("." + d.toLowerCase())) {
+                    return;
+                }
+            }
+            throw new SandboxViolationException("HTTP 域名不在白名单内: " + host);
         } catch (java.net.URISyntaxException e) {
-            throw new SandboxViolationException("Invalid URL: " + url);
+            throw new SandboxViolationException("URL 非法: " + url);
         }
     }
+
+    /** Whitelist summary for CLI display (contracts/cli.md: 白名单摘要). */
+    public String summary() {
+        return "paths=" + allowedPaths.size() + ", commands=" + allowedCommands.size()
+                + ", domains=" + (allowedDomains.contains("*") ? "*（全部）" : allowedDomains.size());
+    }
+
+    public Set<String> getAllowedPaths() { return allowedPaths; }
+    public Set<String> getAllowedCommands() { return allowedCommands; }
+    public Set<String> getAllowedDomains() { return allowedDomains; }
 }

@@ -1,31 +1,50 @@
 package com.oryxos.web;
 
+import com.oryxos.core.OryxTool;
+import com.oryxos.core.ToolRegistry;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Tool information endpoints.
- */
+/** Available tools (contract §8): name / type / description. */
 @RestController
 @RequestMapping("/api/v1/tools")
 public class ToolApiController {
 
+    private final ToolRegistry toolRegistry;
+
+    public ToolApiController(ToolRegistry toolRegistry) {
+        this.toolRegistry = toolRegistry;
+    }
+
     @GetMapping
-    public ApiResponse<List<Map<String, String>>> listTools() {
-        return ApiResponse.success(List.of(
-            Map.of("name", "read_file", "description", "Read file content"),
-            Map.of("name", "write_file", "description", "Write file content"),
-            Map.of("name", "list_dir", "description", "List directory contents"),
-            Map.of("name", "shell", "description", "Execute shell command"),
-            Map.of("name", "http_get", "description", "HTTP GET request"),
-            Map.of("name", "http_post", "description", "HTTP POST request"),
-            Map.of("name", "save_memory", "description", "Save to long-term memory"),
-            Map.of("name", "recall_memory", "description", "Recall from long-term memory"),
-            Map.of("name", "notify", "description", "Send notification via webhook")
-        ));
+    public ApiResponse<Map<String, Object>> listTools() {
+        List<Map<String, Object>> tools = new ArrayList<>();
+        for (OryxTool tool : toolRegistry.listAll()) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("name", tool.getName());
+            entry.put("type", classify(tool.getName()));
+            entry.put("description", tool.getDescription() == null ? "" : tool.getDescription());
+            tools.add(entry);
+        }
+        return ApiResponse.ok(Map.of("tools", tools));
+    }
+
+    /** builtin|memory|http|shell|mcp (contract §8); MCP tools carry the server__tool name. */
+    private static String classify(String name) {
+        if (name.contains("__")) {
+            return "mcp";
+        }
+        return switch (name) {
+            case "save_memory", "recall_memory" -> "memory";
+            case "http_get", "http_post" -> "http";
+            case "shell" -> "shell";
+            default -> "builtin";
+        };
     }
 }

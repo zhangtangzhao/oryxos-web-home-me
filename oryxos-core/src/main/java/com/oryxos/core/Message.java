@@ -15,6 +15,8 @@ public class Message {
     private String content;
     private String toolName;
     private String toolCallId;
+    /** For ASSISTANT messages carrying tool requests: JSON array of {id, name, arguments}. */
+    private String toolCallsJson;
     private Instant timestamp;
 
     public Message() {}
@@ -49,6 +51,8 @@ public class Message {
     public void setToolName(String toolName) { this.toolName = toolName; }
     public String getToolCallId() { return toolCallId; }
     public void setToolCallId(String toolCallId) { this.toolCallId = toolCallId; }
+    public String getToolCallsJson() { return toolCallsJson; }
+    public void setToolCallsJson(String toolCallsJson) { this.toolCallsJson = toolCallsJson; }
     public Instant getTimestamp() { return timestamp; }
     public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
 }

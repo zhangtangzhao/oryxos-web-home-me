@@ -1,0 +1,16 @@
+# OryxOS MCP server 注册示例（data-model §4）
+# 复制为 config/mcp_servers.yaml 后按需修改；密钥一律走 ${ENV_VAR}（宪法 VI）。
+# 连接失败的 server 会记日志并跳过，不阻断启动（FR-016）。
+servers:
+  # 方式一：stdio —— OryxOS 以子进程方式拉起 MCP server
+  - name: github
+    transport: stdio
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-github"]
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_TOKEN}
+
+  # 方式二：http(SSE) —— 连接远端 MCP server
+  # - name: remote-tools
+  #   transport: http
+  #   url: https://mcp.example.com/sse

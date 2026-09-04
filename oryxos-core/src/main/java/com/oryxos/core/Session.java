@@ -18,6 +18,8 @@ public class Session {
     private Instant createdAt;
     private Instant lastActiveAt;
     private Instant archivedAt;
+    /** Ephemeral sessions (REST stateless invoke) are processed but never persisted. */
+    private boolean ephemeral;
 
     public enum SessionStatus { ACTIVE, ARCHIVED }
 
@@ -63,4 +65,6 @@ public class Session {
     public void setLastActiveAt(Instant lastActiveAt) { this.lastActiveAt = lastActiveAt; }
     public Instant getArchivedAt() { return archivedAt; }
     public void setArchivedAt(Instant archivedAt) { this.archivedAt = archivedAt; }
+    public boolean isEphemeral() { return ephemeral; }
+    public void setEphemeral(boolean ephemeral) { this.ephemeral = ephemeral; }
 }

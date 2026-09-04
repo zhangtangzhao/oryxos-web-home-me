@@ -82,6 +82,10 @@ oryxos:
   memory:
     backend: markdown
 
+  # Default notify webhook (clarification #1); override with ORYXOS_NOTIFY_WEBHOOK_URL
+  notify:
+    webhook-url: ${ORYXOS_NOTIFY_WEBHOOK_URL:}
+
 logging:
   level:
     root: INFO

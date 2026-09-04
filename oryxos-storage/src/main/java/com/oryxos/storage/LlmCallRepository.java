@@ -14,4 +14,6 @@ public interface LlmCallRepository extends JpaRepository<LlmCallEntity, Long> {
     List<LlmCallEntity> findBySessionId(String sessionId);
 
     List<LlmCallEntity> findByProvider(String provider);
+
+    long countBySessionId(String sessionId);
 }
