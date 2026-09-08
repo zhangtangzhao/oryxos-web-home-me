@@ -26,18 +26,22 @@ public class JpaSessionStore implements SessionStore {
 
     @Override
     public void save(Session session) {
-        SessionEntity entity = repository.findById(session.getSessionId()).orElseGet(SessionEntity::new);
-        entity.setSessionId(session.getSessionId());
-        entity.setProfileName(session.getProfileName());
-        entity.setChannel(session.getChannel());
-        entity.setUserId(session.getUserId());
-        entity.setMessagesJson(toJson(session.getMessages()));
-        entity.setStatus(session.getStatus() == Session.SessionStatus.ARCHIVED
-                ? SessionEntity.SessionStatus.ARCHIVED : SessionEntity.SessionStatus.ACTIVE);
-        entity.setCreatedAt(session.getCreatedAt());
-        entity.setLastActiveAt(session.getLastActiveAt());
-        entity.setArchivedAt(session.getArchivedAt());
-        repository.save(entity);
+        // 整个 read-modify-write 放进写闸门：并发 getOrCreate 同 id 时，
+        // 后到者在锁内 findById 已能看到先到者的行，自动退化为更新而非主键冲突
+        SqliteWriteGate.write(() -> {
+            SessionEntity entity = repository.findById(session.getSessionId()).orElseGet(SessionEntity::new);
+            entity.setSessionId(session.getSessionId());
+            entity.setProfileName(session.getProfileName());
+            entity.setChannel(session.getChannel());
+            entity.setUserId(session.getUserId());
+            entity.setMessagesJson(toJson(session.getMessages()));
+            entity.setStatus(session.getStatus() == Session.SessionStatus.ARCHIVED
+                    ? SessionEntity.SessionStatus.ARCHIVED : SessionEntity.SessionStatus.ACTIVE);
+            entity.setCreatedAt(session.getCreatedAt());
+            entity.setLastActiveAt(session.getLastActiveAt());
+            entity.setArchivedAt(session.getArchivedAt());
+            repository.save(entity);
+        });
     }
 
     @Override

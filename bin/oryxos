@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# OryxOS launcher — wraps the single executable fat JAR (research R-11).
+# Usage: bin/oryxos <command> [args]   e.g. bin/oryxos init
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Prefer a built jar in the repo; fall back to a jar sitting next to bin/.
+JAR="$(ls "$DIR"/../oryxos-boot/target/oryxos-boot-*.jar 2>/dev/null | grep -v sources | head -1 || true)"
+if [ -z "$JAR" ]; then
+  JAR="$(ls "$DIR"/oryxos-boot-*.jar 2>/dev/null | head -1 || true)"
+fi
+if [ -z "$JAR" ]; then
+  echo "未找到 oryxos-boot JAR：请先 mvn -pl oryxos-boot -am package -DskipTests，或将 JAR 放入 bin/ 同级目录" >&2
+  exit 1
+fi
+
+exec java -jar "$JAR" "$@"

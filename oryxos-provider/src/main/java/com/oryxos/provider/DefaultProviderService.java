@@ -39,16 +39,22 @@ public class DefaultProviderService implements ProviderService, LlmClient {
     private final Map<String, String> apiKeyEnvByName = new LinkedHashMap<>();
 
     public DefaultProviderService(ProviderProperties properties) {
-        for (ProviderProperties.Def def : properties.getProviders()) {
-            if (def.getName() == null || def.getName().isBlank()
-                    || def.getBaseUrl() == null || def.getBaseUrl().isBlank()) {
-                throw new IllegalStateException(
-                        "Provider 配置非法：oryxos.providers 中每项必须包含 name 与 base-url（收到: " + def.getName() + "）");
+        ProviderConfigLoader.Result result = ProviderConfigLoader.validate(properties.getProviders());
+        if (!result.problems().isEmpty()) {
+            // FR-008: 启动失败必须点名全部非法字段，而不是只报第一个
+            StringBuilder msg = new StringBuilder("Provider 配置校验失败，共 ")
+                    .append(result.problems().size()).append(" 处：");
+            for (ProviderConfigLoader.Problem p : result.problems()) {
+                msg.append("\n  - ").append(p);
             }
-            String envName = def.getApiKeyEnv() == null ? "" : def.getApiKeyEnv().trim();
-            String key = envName.isEmpty() ? null : System.getenv(envName);
+            throw new IllegalStateException(msg.toString());
+        }
+        for (ProviderProperties.Def def : result.validDefs()) {
+            String envName = def.getApiKeyEnv().trim();
+            String key = System.getenv(envName);
             if (key == null || key.isBlank()) {
-                log.warn("Provider [{}] 已跳过注册：环境变量 {} 未设置或为空", def.getName(), envName);
+                log.warn("Provider [{}] 已跳过注册：环境变量 {} 未设置或为空（配置合法；补齐后重启即可启用）",
+                        def.getName(), envName);
                 continue;
             }
             // base-url 已含版本段（如 /v1），补全路径仅保留资源段

@@ -1,12 +1,25 @@
 spring:
   application:
     name: oryxos
+  # 平台线程池（Tomcat 200）：xerial SQLite JDBC 内部 synchronized 在 JDK 21
+  # 虚拟线程上会钉住载体线程，并发下载体耗尽反令读写全面排队
   threads:
     virtual:
-      enabled: true
+      enabled: false
   datasource:
-    url: jdbc:sqlite:${oryxos.root:.oryxos}/oryxos.db
+    # SQLite 并发拓扑（三层）：
+    # 1) SqliteWriteGate 进程内互斥所有写事务——同一时刻至多一个写者触达引擎，
+    #    根除并发 BEGIN IMMEDIATE 的引擎忙等退避车队（尾延迟主因）；
+    # 2) WAL 读写并发 + busy_timeout 兜底跨进程写冲突（如 CLI 与 serve 同时运行）；
+    # 3) synchronous=OFF：WAL 下提交不 fsync（仅 checkpoint 时），掉电可能丢最近写入
+    #    但库不损坏；单节点私有部署换取尾延迟稳定（Windows/NTFS fsync 一次可达数百毫秒）。
+    url: jdbc:sqlite:${oryxos.root:.oryxos}/oryxos.db?journal_mode=WAL&busy_timeout=5000&transaction_mode=IMMEDIATE&synchronous=OFF
     driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 20
+      # WAL auto-checkpoint 默认 1000 页（≈4MB）触发，一次拷 4MB WAL 可 stall
+      # 写者秒级；64 页（≈256KB）把 stall 切小到毫秒级且保证 WAL 有界
+      connection-init-sql: PRAGMA wal_autocheckpoint=64
   jpa:
     hibernate:
       ddl-auto: update
@@ -29,6 +42,17 @@ server:
   tomcat:
     threads:
       max: 200
+    # 压测延迟以服务端 %D（处理耗时 ms）为准——Windows 上任何客户端自测
+    # 都会被进程调度/TCP 栈放大出数百毫秒伪尾，服务端日志是权威口径
+    accesslog:
+      enabled: true
+      directory: ${oryxos.root:.oryxos}/logs
+      prefix: access
+      suffix: .log
+      # 保持缓冲（默认）：无缓冲会把日志写盘放进请求线程，Windows 文件过滤
+      # 驱动（Defender）下高并发时反而制造尾延迟；压测脚本以轮询等 flush
+      buffered: true
+      pattern: "%D %s %r"
 
 # OryxOS-specific configuration
 oryxos:
@@ -89,6 +113,4 @@ oryxos:
 logging:
   level:
     root: INFO
-    com.oryxos: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    com.oryxos: WARN

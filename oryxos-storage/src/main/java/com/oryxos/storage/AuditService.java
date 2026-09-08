@@ -38,7 +38,7 @@ public class AuditService implements AuditLog {
         e.setTotalTokens(totalTokens);
         e.setDurationMs(durationMs);
         e.setCreatedAt(Instant.now());
-        llmRepo.save(e);
+        SqliteWriteGate.write(() -> llmRepo.save(e));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class AuditService implements AuditLog {
         e.setErrorMessage(errorMessage);
         e.setDurationMs(durationMs);
         e.setCreatedAt(Instant.now());
-        toolRepo.save(e);
+        SqliteWriteGate.write(() -> toolRepo.save(e));
     }
 
     @Override

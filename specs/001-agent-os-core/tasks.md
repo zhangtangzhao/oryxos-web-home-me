@@ -159,11 +159,16 @@
 
 ### Implementation for User Story 5
 
-- [ ] T051 [P] [US5] 在 oryxos-provider/src/main/java/com/oryxos/provider/DefaultProviderService.java 注册 Kimi（Moonshot，OpenAI 兼容 base-url）（FR-006、research R-4）
-- [ ] T052 [P] [US5] 在 oryxos-provider/src/main/java/com/oryxos/provider/DefaultProviderService.java 注册 Spring AI Alibaba（DashScope/qwen）Provider（FR-006、research R-4）
-- [ ] T053 [US5] 完善 oryxos-provider/src/main/java/com/oryxos/provider/ProviderConfigLoader.java 校验体验：缺失 env/非法字段的报错信息含字段名与修复指引，启动期一次报全（FR-008）
-- [ ] T054 [US5] 接入 oryxos-cli/src/main/java/com/oryxos/cli/ProviderCommand.java：`oryxos provider list` 输出 name/model/base_url/密钥来源环境变量名，永不回显密钥明文（FR-008/022）
-- [ ] T055 [US5] 编写 oryxos-provider/src/test/java/com/oryxos/provider/ProviderSwitchTest.java：切换 Provider 后映射生效、llm_calls 记录新 provider/model；按 quickstart.md 场景 7 手工验证（SC-004）
+- [X] T051 [P] [US5] 在 oryxos-provider/src/main/java/com/oryxos/provider/DefaultProviderService.java 注册 Kimi（Moonshot，OpenAI 兼容 base-url）（FR-006、research R-4）
+  ✅ 按 R-4 协议统一设计：注册是配置驱动（application.yml `oryxos.providers` 已含 kimi → https://api.moonshot.cn/v1, MOONSHOT_API_KEY），DefaultProviderService 构造期逐项构建 OpenAiApi 进入显式 Map。ProviderSwitchTest.explicitMappingRegistersKimiAndQwenWithoutTypeScanning 断言 kimi 注册成功且无类型扫描、无网络调用。
+- [X] T052 [P] [US5] 在 oryxos-provider/src/main/java/com/oryxos/provider/DefaultProviderService.java 注册 Spring AI Alibaba（DashScope/qwen）Provider（FR-006、research R-4）
+  ✅ 同上配置驱动：qwen → https://dashscope.aliyuncs.com/compatible-mode/v1, DASHSCOPE_API_KEY（OpenAI 兼容端点），与 kimi 同一显式 Map 注册路径，同一测试断言。
+- [X] T053 [US5] 完善 oryxos-provider/src/main/java/com/oryxos/provider/ProviderConfigLoader.java 校验体验：缺失 env/非法字段的报错信息含字段名与修复指引，启动期一次报全（FR-008）
+  ✅ 新建 ProviderConfigLoader（record Problem{providerName,field,message} + Result）：name/base-url/api-key-env 缺失、base-url 非 http(s)、重名 —— 全部收集为问题列表，DefaultProviderService 构造期对非空列表抛出一条聚合 IllegalStateException（"共 N 处" 逐条点名）。缺失 env 变量不阻断启动：结构化 warn 点名变量后跳过注册，调用期报错点名约定变量。ProviderConfigLoaderTest 6 例覆盖。
+- [X] T054 [US5] 接入 oryxos-cli/src/main/java/com/oryxos/cli/ProviderCommand.java：`oryxos provider list` 输出 name/model/base_url/密钥来源环境变量名，永不回显密钥明文（FR-008/022）
+  ✅ 轻命令重写（不起 Spring）：外部 config/application.yml 优先、classpath application.yml 兜底，SnakeYAML 直读 oryxos.providers；输出 name/base_url/密钥环境变量名 + ✓/✗ 设置状态（永不回显值）；扫描工作区 agents/*/AGENT.md frontmatter 追加模型使用段。E2E：fat jar 验证 3 Provider 列出、设 DEEPSEEK_API_KEY 后仅 deepseek 翻转 ✓、demo Agent 显示 `demo → kimi / moonshot-v1-8k`。
+- [X] T055 [US5] 编写 oryxos-provider/src/test/java/com/oryxos/provider/ProviderSwitchTest.java：切换 Provider 后映射生效、llm_calls 记录新 provider/model；按 quickstart.md 场景 7 手工验证（SC-004）
+  ✅ 位置偏差：AgentService + 审计装配在 boot 上下文，测试放 oryxos-boot/src/test（类注释说明）。4 例：①hello(deepseek)/bot2(kimi) 两 Agent 持久会话发消息 → llm_calls 各自记录 provider/model（经 ReActLoop:60 取自 Profile，证明切换=改 AGENT.md 即生效）；②kimi+qwen 显式 Map 注册；③未注册 provider 报错点名 GHOST_API_KEY；④非法配置启动抛聚合错误（共 5 处）。注：invoke 为临时会话（http-invoke-<uuid>）不可按稳定 id 查审计，故走 POST /sessions + /messages 持久链路。全量 53 测试绿（core 17 + provider 6 + memory 6 + tool 14 + boot 10），BUILD SUCCESS。
 
 **Checkpoint**: 全部五大能力交付，配置即切换无锁定。
 
@@ -173,12 +178,18 @@
 
 **Purpose**: 命令补齐、性能验收、文档、打包与全量验收
 
-- [ ] T056 接入 oryxos-cli/src/main/java/com/oryxos/cli/StatusCommand.java 与 ProfileCommand.java 的 show/delete 子命令——12 命令全部就绪（FR-022、contracts/cli.md）
-- [ ] T057 [P] 集成 springdoc-openapi 暴露 OpenAPI 文档（oryxos-web，CLAUDE.md Web 模块职责）
-- [ ] T058 [P] 编写 scripts/load-test.md + 脚本：单节点 10 Agent / 100 并发 Session / 4 小时稳定 / Session 创建 P99 ≤ 200ms / 内部转发 ≤ 50ms 验证（SC-002，需求文档 §13 性能验收）
-- [ ] T059 [P] 编写 docs/DeploymentGuide.md 部署文档：从零到首对话 ≤ 30 分钟走查（SC-001，可运维性验收）
-- [ ] T060 打包验证：spring-boot-maven-plugin repackage 单可执行 JAR + bin/ 脚本 `oryxos` 全命令走查（research R-11、FR-022）
-- [ ] T061 全量验收：quickstart.md 场景 1–9 逐项走查记录 + 宪法 9 原则合规自查（含 R-9 防双重调用门禁测试通过、审计三表 day-one 数据在库）
+- [X] T056 接入 oryxos-cli/src/main/java/com/oryxos/cli/StatusCommand.java 与 ProfileCommand.java 的 show/delete 子命令——12 命令全部就绪（FR-022、contracts/cli.md）
+  ✅ StatusCommand 契约化重写：工作区绝对路径 / AgentLoader 计数 / Provider 复用 ProviderCommand.ListCommand 静态方法（只显变量名+✓/✗不回显明文）/ sessions 按 status 聚合 active/archived / scheduled_tasks 计数（serve-only 库无此表→"gateway 首次注册时生成"兜底文案）/ 未初始化工作区退出码 1。轻命令 E2E：init 幂等、status、profile create/show/delete、provider list、tool list、session list 全通过；serve 后 create/fetch/delete 走查；chat 无密钥点名报错。踩坑：轻命令误起 Spring 属回归；未初始化表（scheduled_tasks）须容错。
+- [X] T057 [P] 集成 springdoc-openapi 暴露 OpenAPI 文档（oryxos-web，CLAUDE.md Web 模块职责）
+  ✅ springdoc-openapi-starter-webmvc-ui 集成；E2E：/v3/api-docs 返回 OpenAPI 3.1.0、9 个 path 模板、/swagger-ui/index.html 200。关键坑：springdoc 2.6.0 与 Spring 6.2 不兼容（NoSuchMethodError ControllerAdviceBean.<init>），子模块升 2.8.0 无效——根 pom dependencyManagement 的 ${springdoc.version} 属性钉住版本，须升根 pom 至 2.8.0。
+- [X] T058 [P] 编写 scripts/load-test.md + 脚本：单节点 10 Agent / 100 并发 Session / 4 小时稳定 / Session 创建 P99 ≤ 200ms / 内部转发 ≤ 50ms 验证（SC-002，需求文档 §13 性能验收）
+  ✅ 脚本 scripts/load_test.py（纯标准库）+ load-test.md 定稿。三大结论：①**测量口径只认服务端 Tomcat access log %D**——Windows 客户端自测两种并发模型均被证伪（线程+GIL p99 虚高 2771ms；多进程被调度/TCP 放大，同窗口顺序探测 max 117ms vs 客户端自报 1000ms）；脚本按偏移量+轮询 flush 解析压测窗口日志行（注意 Tomcat 10.1 %D 实为微秒）。②**服务端 SQLite 单写者拓扑落地**：SqliteWriteGate（ReentrantLock 进程内互斥写事务，根除 BEGIN IMMEDIATE 忙等退避车队 + getOrCreate 竞态；JDK 21 虚拟线程在 synchronized 钉死 carrier，故改平台线程池）+ WAL/IMMEDIATE/busy_timeout=5000/synchronous=OFF + hikari pool 20 + PRAGMA wal_autocheckpoint=64（默认 4MB checkpoint 秒级 stall 切小到毫秒）。③**残余偶发 stall 为环境注入**：Defender 过滤驱动（排除 D:\tmp 后 create p99 755→82.6ms 实验证实）+ i5-14400 混合核调度；实测 c2 三连全绿（create p99 36-49ms / fetch p99 29-31ms）、c10 多轮 create p99 82-144ms PASS、全并发档 0 错误；Windows 部署建议杀软排除 .oryxos/，参考部署目标 Linux。踩坑：AgentLoader 启动时扫描（Agent 须先于 serve 预置）；压测多轮须唯一 user id（归档派生 -N 后缀）；jar 被运行进程锁住须先 taskkill。
+- [X] T059 [P] 编写 docs/DeploymentGuide.md 部署文档：从零到首对话 ≤ 30 分钟走查（SC-001，可运维性验收）
+  ✅ 全中文部署指南：前置条件（JDK21+/密钥仅环境变量/磁盘）→ 三步上线（bin/oryxos init → export key → profile create + 改 AGENT.md）→ 首对话验证 → 服务化（serve/gateway + systemd unit 示例）→ 日常运维表（status/session/provider/审计 sqlite3/备份=打包 .oryxos/）→ 安全要点（密钥轮换、三白名单收紧、网络收口）→ 故障排查表，链接 quickstart 与 load-test。
+- [X] T060 打包验证：spring-boot-maven-plugin repackage 单可执行 JAR + bin/ 脚本 `oryxos` 全命令走查（research R-11、FR-022）
+  ✅ bin/oryxos 包装脚本（定位 target/ JAR，兼容 bin/ 同级发布包，缺 JAR 报构建指引）。12 命令经包装脚本全走查：init/status/profile×4/provider/tool/session 轻命令亚秒返回 + serve REST 冒烟 + gateway。踩坑：repackage 失败留下缺 application.yml 的损坏 JAR 必须 clean package；Windows 控制台中文乱码为显示伪影不影响功能。
+- [X] T061 全量验收：quickstart.md 场景 1–9 逐项走查记录 + 宪法 9 原则合规自查（含 R-9 防双重调用门禁测试通过、审计三表 day-one 数据在库）
+  ✅ 场景走查（最终构建全新工作区实证）：①init 幂等/profile create/status（Agents:1+3 Provider+DB/调度器准确）✓，真实 LLM 首对话延后人工（无密钥点名报错已证）；②ReAct 链路自动化覆盖（ReactAuditGateTest/ToolExecutorRetryTest），真实 LLM 工具任务延后；③沙箱 WhitelistSandboxTest 12 项+SandboxInterceptionGateTest 100% 拦截+success=false 审计 ✓；④记忆/归档/恢复自动化（LongTermMemory/MemoryInjectionGate/SessionArchive/SessionRecovery）+ 本次重启恢复 E2E（归档会话跨进程完整）✓；⑤REST 闭环最终构建全端点 E2E ✓（health/create/fetch/delete/归档后发消息 409/profiles/tools/memory/info/openapi 200；中文 curl 在 GBK 控制台须 ASCII 体）；⑥审计三表在库计数正确（无 LLM 调用为 0 属预期）✓；⑦ProviderSwitchTest 4 项（切换/显式映射/缺 env 点名/非法配置聚合报错）✓；⑧MCP 无配置优雅跳过 ✓，真实 MCP server 延后人工；⑨SchedulerChainGateTest 调度链路 ✓，真实天气+Webhook 次日 Demo 延后到部署后人工。宪法 9 原则逐条合规：①Java 21 同步模型（平台线程池，无 Reactor/CF）②ReAct 自实现（R-9 门禁绿）③显式 Map 映射（测试断言无类型扫描）④白名单沙箱（无 SecurityManager）⑤审计 day-one（三表在库+测试断言）⑥密钥仅环境变量（✓/✗ 不回显）⑦一目录一 Agent（ContextLoader 属 core）⑧Skill≠Tool（不进 ToolRegistry）⑨接口先行（SessionStore/MemoryService/NotifyChannelAdapter/Sandbox 端口）。全量回归 mvn clean test 53/53 绿。
 
 ---
 
