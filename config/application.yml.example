@@ -17,7 +17,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+    # 建表走 classpath schema.sql（幂等 IF NOT EXISTS）；不用 update：
+    # hibernate 6 对 SQLite 已有表抽取 schema 会崩（空 COLUMN_DEF）
+  sql:
+    init:
+      mode: always
     show-sql: false
     properties:
       hibernate:

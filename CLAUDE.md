@@ -35,6 +35,7 @@ OryxOS 是基于 Java 21 + Spring Boot 3.x 的**企业级 Agent OS**，作为统
 | `oryxos-tool` | 工具体系：内置 Tool（File/Shell/HTTP/Notify）、`McpClientService`、`ToolRegistry`、`Sandbox` + `WhitelistSandbox`、`NotifyChannelAdapter` |
 | `oryxos-channel-cli` | CLI Channel：`CliChannel`、`oryxos chat` 命令实现 |
 | `oryxos-web` | REST API：`WebServer`、6 个 `ApiController`、`GlobalExceptionHandler`、OpenAPI 文档 |
+| `oryxos-kb` | 知识库：`DefaultKbService`、`KbIngestService`（切分+嵌入+FTS）、`KbSearchService`（加权 RRF）、`KbTools`（`kb_search`/`kb_overview`）、`kb eval` 评测 |
 | `oryxos-storage` | 持久化层：SQLite、`SessionRepository`、`ToolInvocationRepository`、`LlmCallRepository` |
 | `oryxos-cli` | 命令行入口：Picocli 主入口、12 个子命令 |
 | `oryxos-boot` | Spring Boot 启动模块：主类、自动配置、依赖聚合 |
@@ -148,6 +149,7 @@ oryxos session list                   # 列出会话
 .oryxos/
 ├── agents/            # 每个子目录 = 一个 Agent（AGENT.md + skills/ + scripts/ + REFERENCE.md）
 ├── skills/            # 公共 Skill 实体库
+├── kb/                # 知识库：kb/<name>/docs/ 文档 + evalset.yaml（索引在 oryxos.db）
 ├── memory/
 │   └── MEMORY.md      # 长期记忆
 ├── output/            # Agent 产出物

@@ -26,6 +26,10 @@
         </dependency>
         <dependency>
             <groupId>com.oryxos</groupId>
+            <artifactId>oryxos-kb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oryxos</groupId>
             <artifactId>oryxos-tool</artifactId>
         </dependency>
         <dependency>

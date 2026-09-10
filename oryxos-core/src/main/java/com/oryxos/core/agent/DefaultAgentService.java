@@ -8,6 +8,7 @@ import com.oryxos.core.Session;
 import com.oryxos.core.ToolRegistry;
 import com.oryxos.core.react.ReActLoop;
 import com.oryxos.core.session.SessionStore;
+import com.oryxos.core.tool.ToolContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,10 +38,15 @@ public class DefaultAgentService implements AgentService {
         Profile profile = agentLoader.require(session.getProfileName());
         session.addMessage(Message.user(userMessage));
         List<OryxTool> tools = toolRegistry.listForAgent(profile.getTools());
-        String reply = reActLoop.run(session, profile, tools);
-        if (!session.isEphemeral()) {
-            sessionStore.save(session);
+        ToolContext.bind(profile);
+        try {
+            String reply = reActLoop.run(session, profile, tools);
+            if (!session.isEphemeral()) {
+                sessionStore.save(session);
+            }
+            return reply;
+        } finally {
+            ToolContext.clear();
         }
-        return reply;
     }
 }

@@ -116,10 +116,12 @@ public class DefaultProviderService implements ProviderService, LlmClient {
         // logprobs, topLogprobs, maxTokens, maxCompletionTokens, n, outputModalities,
         // audioParameters, presencePenalty, responseFormat, seed, serviceTier, stop,
         // stream, streamOptions, temperature, topP, tools, toolChoice, parallelToolCalls, user
+        // stream 必须显式 false：M5 chatCompletionEntity 有 Assert.isTrue(!request.stream())，
+        // 传 null 会在拆箱处 NPE
         OpenAiApi.ChatCompletionRequest completionRequest = new OpenAiApi.ChatCompletionRequest(
                 completionMessages, request.getModel(),
                 null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, false, null,
                 temperature, null, tools.isEmpty() ? null : tools, null, null, null);
 
         long start = System.currentTimeMillis();
@@ -206,9 +208,11 @@ public class DefaultProviderService implements ProviderService, LlmClient {
     private List<OpenAiApi.FunctionTool> toFunctionTools(List<ToolSpec> specs) {
         List<OpenAiApi.FunctionTool> tools = new ArrayList<>();
         for (ToolSpec spec : specs) {
+            // Spring AI M5 FunctionTool.Function 构造序是 (description, name, jsonSchema)，
+            // 不是 (name, description, ...)——顺序错会把工具名和描述对调、真实模型无法按名调用
             tools.add(new OpenAiApi.FunctionTool(new OpenAiApi.FunctionTool.Function(
-                    spec.getName(),
                     spec.getDescription() == null ? "" : spec.getDescription(),
+                    spec.getName(),
                     spec.getInputSchemaJson() == null ? "{}" : spec.getInputSchemaJson())));
         }
         return tools;

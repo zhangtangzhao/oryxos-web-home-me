@@ -16,6 +16,7 @@
         <module>oryxos-core</module>
         <module>oryxos-provider</module>
         <module>oryxos-memory</module>
+        <module>oryxos-kb</module>
         <module>oryxos-tool</module>
         <module>oryxos-channel-cli</module>
         <module>oryxos-web</module>
@@ -72,6 +73,11 @@
             <dependency>
                 <groupId>com.oryxos</groupId>
                 <artifactId>oryxos-memory</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oryxos</groupId>
+                <artifactId>oryxos-kb</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

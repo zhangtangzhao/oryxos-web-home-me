@@ -135,6 +135,7 @@ public class AgentLoader {
 
         p.setTools(strList(map.get("tools"), "tools"));
         p.setMcpServers(strList(map.get("mcp_servers"), "mcp_servers"));
+        p.setKnowledgeBases(strList(map.get("knowledge_bases"), "knowledge_bases"));
         p.setBootstrap(strList(map.get("bootstrap"), "bootstrap"));
 
         List<Map<String, Object>> channels = mapList(map.get("channels"), "channels");

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public final class WorkspaceInitializer {
 
-    public static final String[] SUBDIRS = {"agents", "skills", "memory", "output", "sessions", "logs"};
+    public static final String[] SUBDIRS = {"agents", "skills", "memory", "output", "sessions", "logs", "kb"};
     public static final String[] BOOTSTRAP_FILES = {"AGENTS.md", "SOUL.md", "USER.md"};
 
     private WorkspaceInitializer() {}

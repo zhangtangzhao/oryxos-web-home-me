@@ -61,9 +61,12 @@ public class ToolExecutor {
             }
             long durationMs = System.currentTimeMillis() - start;
 
-            // 每次尝试各落一条审计；先审计，后回传（宪法 V）
+            // 每次尝试各落一条审计；先审计，后回传（宪法 V）。
+            // 结构化审计 JSON（工具自带）优先于纯文本 content 落 result_json。
             auditLog.recordToolInvocation(session.getSessionId(), toolName, inputJson,
-                    result.isSuccess() ? result.getContent() : null,
+                    result.isSuccess()
+                            ? (result.getAuditJson() != null ? result.getAuditJson() : result.getContent())
+                            : null,
                     result.isSuccess(),
                     result.isSuccess() ? null : result.getErrorMessage(),
                     durationMs);

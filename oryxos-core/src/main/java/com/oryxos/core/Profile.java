@@ -15,6 +15,7 @@ public class Profile {
     private ProviderRef provider;
     private List<String> tools;
     private List<String> mcpServers;
+    private List<String> knowledgeBases = new java.util.ArrayList<>();
     private List<ChannelRef> channels;
     private List<ScheduleDef> schedules;
     private List<String> bootstrap;
@@ -90,6 +91,8 @@ public class Profile {
     public void setTools(List<String> tools) { this.tools = tools; }
     public List<String> getMcpServers() { return mcpServers; }
     public void setMcpServers(List<String> mcpServers) { this.mcpServers = mcpServers; }
+    public List<String> getKnowledgeBases() { return knowledgeBases; }
+    public void setKnowledgeBases(List<String> knowledgeBases) { this.knowledgeBases = knowledgeBases; }
     public List<ChannelRef> getChannels() { return channels; }
     public void setChannels(List<ChannelRef> channels) { this.channels = channels; }
     public List<ScheduleDef> getSchedules() { return schedules; }

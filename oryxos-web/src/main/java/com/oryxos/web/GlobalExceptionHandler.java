@@ -1,6 +1,10 @@
 package com.oryxos.web;
 
 import com.oryxos.core.session.SessionArchivedException;
+import com.oryxos.kb.EmbeddingNotConfiguredException;
+import com.oryxos.kb.EmbeddingUnavailableException;
+import com.oryxos.kb.KbConflictException;
+import com.oryxos.kb.KbNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,6 +35,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SessionArchivedException.class)
     public ResponseEntity<ApiResponse<Void>> handleArchived(SessionArchivedException e) {
         return build(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    // ---- knowledge base error mapping (contracts/rest-api.md) ----
+
+    @ExceptionHandler(KbNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleKbNotFound(KbNotFoundException e) {
+        return build(HttpStatus.NOT_FOUND, e.getMessage() + " (KB_NOT_FOUND)");
+    }
+
+    @ExceptionHandler(KbConflictException.class)
+    public ResponseEntity<ApiResponse<Void>> handleKbConflict(KbConflictException e) {
+        return build(HttpStatus.CONFLICT, e.getMessage() + " (" + e.getCode() + ")");
+    }
+
+    @ExceptionHandler(EmbeddingUnavailableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleEmbeddingUnavailable(EmbeddingUnavailableException e) {
+        return build(HttpStatus.BAD_GATEWAY, e.getMessage() + " (EMBEDDING_UNAVAILABLE)");
+    }
+
+    @ExceptionHandler(EmbeddingNotConfiguredException.class)
+    public ResponseEntity<ApiResponse<Void>> handleEmbeddingNotConfigured(EmbeddingNotConfiguredException e) {
+        return build(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage() + " (EMBEDDING_NOT_CONFIGURED)");
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

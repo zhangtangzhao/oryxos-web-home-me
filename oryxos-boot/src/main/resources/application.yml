@@ -20,9 +20,16 @@ spring:
       # WAL auto-checkpoint 默认 1000 页（≈4MB）触发，一次拷 4MB WAL 可 stall
       # 写者秒级；64 页（≈256KB）把 stall 切小到毫秒级且保证 WAL 有界
       connection-init-sql: PRAGMA wal_autocheckpoint=64
+  # 建表走 schema.sql（幂等 IF NOT EXISTS，每次启动执行）。不用 hibernate
+  # ddl-auto=update：hibernate 6 对 SQLite 已有表做 schema 提取时 xerial 返回
+  # 空 COLUMN_DEF → NoSuchElementException，第二次启动即崩；且 update 对已有
+  # 表无法演进列。改列需手写迁移脚本（CLAUDE.md 常见陷阱）。
+  sql:
+    init:
+      mode: always
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
@@ -105,6 +112,26 @@ oryxos:
   # Memory backend: markdown | sqlite | mem0
   memory:
     backend: markdown
+
+  # 知识库（002-agent-knowledge-base）：嵌入服务走 OpenAI 兼容 /embeddings，
+  # 凭证只走环境变量（宪法 VI）。base-url 留空 = 未配置：create/add 不受影响，
+  # ingest/search 在使用时点名缺失配置项，启动不崩溃（research D2/D9）。
+  kb:
+    embedding:
+      base-url: ${KB_EMBEDDING_BASE_URL:}        # 例: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key-env: ${KB_EMBEDDING_API_KEY_ENV:DASHSCOPE_API_KEY}
+      model: ${KB_EMBEDDING_MODEL:text-embedding-v3}
+      dimensions: ${KB_EMBEDDING_DIMENSIONS:1024}
+    search:
+      top-k: 5               # kb_search 默认返回条数（上限 20）
+      candidate-pool: 50     # 语义/关键词两路各取的候选池大小
+      rrf-k: 60              # 加权 RRF 常数
+      semantic-weight: 0.7   # 语义路权重
+      keyword-weight: 0.3    # 关键词路权重
+      semantic-floor: 0.35   # 语义路余弦下限：低于即弃（两路皆空 → zero_result）
+    chunk:
+      target-chars: 500      # 分段打包目标字符数
+      overlap-chars: 50      # 相邻分段重叠字符数
 
   # Default notify webhook (clarification #1); override with ORYXOS_NOTIFY_WEBHOOK_URL
   notify:

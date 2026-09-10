@@ -64,6 +64,8 @@ public class ProfileCommand {
                 w.write("  model: deepseek-chat\n");
                 w.write("tools: []\n");
                 w.write("mcp_servers: []\n");
+                w.write("# 绑定知识库（须先 oryxos kb create）；绑定后可在 tools 列 kb_search/kb_overview 使用检索\n");
+                w.write("# knowledge_bases: [product-docs]\n");
                 w.write("channels:\n");
                 w.write("  - name: cli\n");
                 w.write("bootstrap: []\n");

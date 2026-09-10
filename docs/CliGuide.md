@@ -69,6 +69,7 @@ oryxos chat --profile weather      # ⑤ 开聊
 | `oryxos provider list` | 轻 | 列出实例声明的 Provider |
 | `oryxos tool list` | 轻 | 列出可用工具（20 节起为实时清单） |
 | `oryxos session list` | 轻 | 列出会话概览 |
+| `oryxos kb <子命令>` | **重** | 知识库管理（create/list/show/add/ingest/delete/eval） |
 
 **轻/重的区别**：轻命令直接读写文件或只读查库，**不启动 Spring**、秒级返回（实测约 0.35s）；重命令要调模型、跑引擎，才付出 2~4 秒的完整运行时启动代价。判断标准就一条：这个命令要不要调模型/跑引擎。
 
@@ -152,6 +153,33 @@ oryxos session list    # 会话概览：session_id / profile / status / last_act
 ```
 
 `session list` 直连当前目录的 `oryxos.db` 只读查询；库还没创建时提示"暂无会话"。
+
+### 4.7 kb——知识库管理
+
+知识库落 `<root>/kb/<name>/`（文档在 `docs/`，索引在 SQLite）。Agent 要用检索，先建库摄取，再在 `AGENT.md` frontmatter 写 `knowledge_bases: [名字]` 并把 `kb_search`/`kb_overview` 加进 `tools`。
+
+```bash
+oryxos kb create product-docs --description "产品文档"   # 名称限 [a-z0-9][a-z0-9_-]{0,63}
+oryxos kb list                                          # 全库概览（文档数/嵌入模型/更新时间）
+oryxos kb show product-docs                             # 文档清单与状态（pending/ready/failed）
+oryxos kb add product-docs ./部署指南.md ./faq.md        # 复制入 docs/ 并记 pending（仅 .md/.markdown/.txt）
+oryxos kb ingest product-docs                           # 增量摄取：只处理变化文档，移除已删除文档
+oryxos kb delete product-docs                           # 删除库及其全部索引数据与目录（需确认，-y 跳过）
+oryxos kb eval product-docs --top-k 5                   # 跑 evalset.yaml 评测，报告 hit@5
+```
+
+`ingest` 会把文档按标题切分、调嵌入服务生成向量并建 FTS 索引；嵌入服务配置在 `application.yml` 的 `oryxos.kb.embedding` 段（`base-url` / `api-key-env` / `model` / `dimensions`，OpenAI 兼容 `/embeddings`）。
+
+**嵌入模型身份防护**：库一旦摄取即记录（model, dimensions）；之后配置换了模型，`ingest` 直接拒绝（`EMBEDDING_MISMATCH`），检索报"嵌入模型已变更"——不会静默用错维度的向量污染索引。
+
+**评测集** `evalset.yaml`（放 `<root>/kb/<name>/` 下）：
+
+```yaml
+- {query: "默认端口是多少？", expected_path: docs/doc1.md}
+- {query: "这个问题", expected_path: docs/不存在.md}   # [无效] 不计分
+```
+
+`kb eval` 逐条真实检索，输出 `样例数/命中数 → hit@k、zero_result 数、平均耗时` 与每条 `[命中 rank=N]` / `[未命中]` / `[无效]` 标记；命中率低于 100% 打印警告但退出码仍为 0。
 
 ---
 

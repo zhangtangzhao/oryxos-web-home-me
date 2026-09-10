@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "com.oryxos.core",
     "com.oryxos.provider",
     "com.oryxos.memory",
+    "com.oryxos.kb",
     "com.oryxos.tool",
     "com.oryxos.channel",
     "com.oryxos.web",

@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
         ProviderCommand.class,
         ToolCommand.class,
         SessionCommand.class,
+        KbCommand.class,
         CommandLine.HelpCommand.class
     }
 )
