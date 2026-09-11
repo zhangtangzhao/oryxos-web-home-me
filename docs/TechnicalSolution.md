@@ -405,6 +405,8 @@ Web Service 是 OryxOS 的对外完整门面，业务系统通过 REST API 接�
 
 **OpenAPI 文档模块。** 通过 `springdoc-openapi` 自动生成 OpenAPI 3.0 文档，暴露在 `/swagger-ui`。
 
+**管理台静态页（知识库，第 32 节增量）。** 服务端托管知识库 Web 管理台：`oryxos-web` jar 内 `static/admin/` 三个文件（index.html / app.js / style.css），原生 ES Module 无构建，hash 路由列表/详情两视图；裸路径 `GET /admin` 由 `AdminPageController` 302 到 `/admin/index.html`（避免落到 `NoResourceFoundException` 的 JSON 信封）。页面四项能力：知识库总览与单库详情（含结构总览）、建库 → 添加文档 → 摄取就绪闭环、二次确认物理删除、单库试检索。端点增量仅一个只读例外：`POST /api/v1/kbs/{name}/search`（绑定集服务端强制单库 `{name}`），其余全部复用既有 `/api/v1/kbs*` 端点；试检索经 `AuditLog.recordToolInvocation` 落 `tool_invocations`（session_id=`admin-ui`、tool_name=`kb_search`、result_json=结构化 auditJson），与 Agent 工具路径同 schema、同 sink。
+
 ### 7.2 核心阶段 10 个端点
 
 **会话管理（4 个）：**

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OryxOS 知识库管理台</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#/">OryxOS 知识库管理台</a>
+  <nav id="crumb" class="crumb"></nav>
+</header>
+
+<div id="errorbar" class="errorbar hidden">
+  <span id="errtext"></span>
+  <span class="spacer"></span>
+  <button id="errretry" class="btn btn-sm">重试</button>
+  <button id="errclose" class="btn btn-sm btn-ghost" title="关闭">×</button>
+</div>
+
+<main id="app" class="container">
+  <p class="muted">加载中……</p>
+</main>
+
+<div id="modal-root"></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -67,11 +67,14 @@ public class KbSearchService {
     /**
      * error=true 时 errorMessage/text 给出模型可读分支文本；成功时 text 为
      * 模型可见正文，auditJson 为落 tool_invocations.result_json 的固定结构。
+     * hits 为结构化命中（auditJson.results 无 content，试检索展示片段由此取）；
+     * 非成功分支恒为空列表。
      */
     public record SearchResult(boolean error, String errorMessage, String text,
                                String kb, int resultsCount, boolean zeroResult,
                                boolean degraded, String degradedReason,
-                               List<Double> topScores, long durationMs, String auditJson) {
+                               List<Double> topScores, long durationMs, String auditJson,
+                               List<SearchHit> hits) {
     }
 
     // ---- 入口 ----
@@ -137,7 +140,7 @@ public class KbSearchService {
         }
         String auditJson = audit(kb, hits, zeroResult, degraded, degradedReason, durationMs);
         return new SearchResult(false, null, text.toString(), kb, hits.size(),
-                zeroResult, degraded, degradedReason, topScores, durationMs, auditJson);
+                zeroResult, degraded, degradedReason, topScores, durationMs, auditJson, hits);
     }
 
     // ---- kb 解析（绑定过滤，越权防护）----
@@ -368,11 +371,11 @@ public class KbSearchService {
             auditJson = "{\"error\":\"audit_serialize_failed\"}";
         }
         return new SearchResult(false, null, text, kb, 0, false, false,
-                reason, List.of(), System.currentTimeMillis() - start, auditJson);
+                reason, List.of(), System.currentTimeMillis() - start, auditJson, List.of());
     }
 
     private static SearchResult error(String message, long start) {
         return new SearchResult(true, message, message, null, 0, false, false,
-                null, List.of(), System.currentTimeMillis() - start, null);
+                null, List.of(), System.currentTimeMillis() - start, null, List.of());
     }
 }

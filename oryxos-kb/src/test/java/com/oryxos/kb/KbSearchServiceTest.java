@@ -335,6 +335,57 @@ class KbSearchServiceTest {
         assertEquals("常见问题", audit.get("results").get(0).get("heading_path").asText());
     }
 
+    // ---- hits 组件（FR-011 试检索：结构化命中，与 auditJson results 一致） ----
+
+    @Test
+    void successHitsConsistentWithAuditResults() throws Exception {
+        KbSearchService.SearchResult r = service(storeWithKeyword(), new FakeEmbedding())
+                .search(List.of("docs"), "docs", "部署", 5);
+        assertFalse(r.error());
+        List<KbSearchService.SearchHit> hits = r.hits();
+        assertEquals(r.resultsCount(), hits.size());
+        JsonNode auditResults = JSON.readTree(r.auditJson()).get("results");
+        for (int i = 0; i < hits.size(); i++) {
+            KbSearchService.SearchHit hit = hits.get(i);
+            JsonNode a = auditResults.get(i);
+            assertEquals(i + 1, hit.rank());
+            assertEquals(a.get("doc_path").asText(), hit.docPath());
+            assertEquals(a.get("score").asDouble(), hit.score(), 1e-9);
+        }
+        assertEquals("docs/faq.md", hits.get(0).docPath());
+        assertEquals(0, hits.get(0).chunkOrdinal());
+        assertEquals("常见问题", hits.get(0).headingPath());
+        assertEquals("docs", hits.get(0).kb());
+        assertEquals("内容C", hits.get(0).content()); // FR-011：content 供试检索片段展示
+    }
+
+    @Test
+    void errorBranchHasEmptyHits() {
+        KbSearchService.SearchResult r = service(storeWithKeyword(), new FakeEmbedding())
+                .search(List.of("docs"), "other", "q", null);
+        assertTrue(r.error());
+        assertTrue(r.hits().isEmpty());
+    }
+
+    @Test
+    void notConfiguredBranchHasEmptyHits() {
+        FakeEmbedding embedding = new FakeEmbedding();
+        embedding.notConfigured = true;
+        KbSearchService.SearchResult r = service(storeWithKeyword(), embedding)
+                .search(List.of("docs"), "docs", "q", 5);
+        assertFalse(r.error());
+        assertTrue(r.hits().isEmpty());
+    }
+
+    @Test
+    void mismatchBranchHasEmptyHits() {
+        FakeStore store = storeWithKeyword();
+        store.identity = new KbIdentity("stored-model", 8);
+        KbSearchService.SearchResult r = service(store, new FakeEmbedding())
+                .search(List.of("docs"), "docs", "q", 5);
+        assertTrue(r.hits().isEmpty());
+    }
+
     // ---- helpers ----
 
     private static List<String> docOrder(KbSearchService.SearchResult r) throws Exception {

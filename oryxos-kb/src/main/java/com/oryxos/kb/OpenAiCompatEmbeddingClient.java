@@ -37,7 +37,9 @@ public class OpenAiCompatEmbeddingClient implements EmbeddingClient {
 
     @Override
     public String model() {
-        return cfg.getModel();
+        // 未配置时返回空：FR-015 身份比对（KbSearchService）据此跳过，
+        // 未配置信号由 embed() 的 EmbeddingNotConfiguredException 点名给出。
+        return isConfigured() ? cfg.getModel() : "";
     }
 
     @Override
@@ -74,6 +76,14 @@ public class OpenAiCompatEmbeddingClient implements EmbeddingClient {
             throw new EmbeddingNotConfiguredException(
                     "知识库嵌入服务未配置：缺少 oryxos.kb.embedding.model");
         }
+    }
+
+    private boolean isConfigured() {
+        if (cfg.getBaseUrl() == null || cfg.getBaseUrl().isBlank()) return false;
+        if (cfg.getApiKeyEnv() == null || cfg.getApiKeyEnv().isBlank()) return false;
+        String key = System.getenv(cfg.getApiKeyEnv());
+        if (key == null || key.isBlank()) return false;
+        return cfg.getModel() != null && !cfg.getModel().isBlank();
     }
 
     private List<float[]> callBatch(List<String> batch) {

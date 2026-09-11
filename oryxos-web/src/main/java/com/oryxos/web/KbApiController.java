@@ -1,11 +1,14 @@
 package com.oryxos.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oryxos.core.audit.AuditLog;
 import com.oryxos.kb.DefaultKbService;
 import com.oryxos.kb.KbDocumentRecord;
 import com.oryxos.kb.KbDocumentStatus;
 import com.oryxos.kb.KbIngestService;
 import com.oryxos.kb.KbOverviewEntry;
 import com.oryxos.kb.KbRecord;
+import com.oryxos.kb.KbSearchService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,10 +33,18 @@ import java.util.Map;
 @RequestMapping("/api/v1/kbs")
 public class KbApiController {
 
-    private final DefaultKbService kbService;
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final String AUDIT_SESSION = "admin-ui";
 
-    public KbApiController(DefaultKbService kbService) {
+    private final DefaultKbService kbService;
+    private final KbSearchService searchService;
+    private final AuditLog auditLog;
+
+    public KbApiController(DefaultKbService kbService, KbSearchService searchService,
+                           AuditLog auditLog) {
         this.kbService = kbService;
+        this.searchService = searchService;
+        this.auditLog = auditLog;
     }
 
     public record CreateRequest(String name, String description) {
@@ -149,6 +160,92 @@ public class KbApiController {
         }
         data.put("documents", documents);
         return ApiResponse.ok(data);
+    }
+
+    /**
+     * 试检索（contracts/admin-rest-api.md，FR-011 / FR-008 只读例外）：绑定集强制
+     * 单库 {name}；分支按 degradedReason 机器可读判别（409/503），其余检索异常
+     * 502 兜底。每次服务端检索经 AuditLog 落 tool_invocations（session_id=admin-ui）。
+     */
+    public record SearchRequest(String query, Integer top_k) {
+    }
+
+    @PostMapping("/{name}/search")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> search(
+            @PathVariable String name, @RequestBody(required = false) SearchRequest request) {
+        kbService.require(name);
+        if (request == null || request.query() == null || request.query().isBlank()) {
+            throw new IllegalArgumentException("query 必填且不能为空");
+        }
+        String query = request.query().trim();
+        Integer topK = request.top_k();
+        String inputJson = auditInputJson(name, query, topK);
+        long start = System.currentTimeMillis();
+        KbSearchService.SearchResult result;
+        try {
+            result = searchService.search(List.of(name), name, query, topK);
+        } catch (Exception e) {
+            auditLog.recordToolInvocation(AUDIT_SESSION, "kb_search", inputJson, null,
+                    false, e.getMessage(), System.currentTimeMillis() - start);
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
+                    ApiResponse.error(HttpStatus.BAD_GATEWAY.value(),
+                            "检索失败: " + e.getMessage() + " (SEARCH_FAILED)"));
+        }
+        String reason = result.degradedReason();
+        if (reason != null && reason.contains("embedding_model_mismatch")) {
+            auditTrial(AUDIT_SESSION, inputJson, result, false);
+            return errorResponse(HttpStatus.CONFLICT, "EMBEDDING_MISMATCH", result.text());
+        }
+        if (reason != null && reason.contains("embedding_not_configured")) {
+            auditTrial(AUDIT_SESSION, inputJson, result, false);
+            return errorResponse(HttpStatus.SERVICE_UNAVAILABLE, "EMBEDDING_NOT_CONFIGURED",
+                    result.text());
+        }
+        auditTrial(AUDIT_SESSION, inputJson, result, true);
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("kb", result.kb());
+        data.put("query", query);
+        data.put("zero_result", result.zeroResult());
+        data.put("degraded", result.degraded());
+        data.put("degraded_reason", result.degradedReason());
+        data.put("duration_ms", result.durationMs());
+        List<Map<String, Object>> hits = new ArrayList<>();
+        for (KbSearchService.SearchHit h : result.hits()) {
+            Map<String, Object> hit = new LinkedHashMap<>();
+            hit.put("doc_path", h.docPath());
+            hit.put("heading_path", h.headingPath());
+            hit.put("chunk_ordinal", h.chunkOrdinal());
+            hit.put("score", h.score());
+            hit.put("content", h.content());
+            hits.add(hit);
+        }
+        data.put("hits", hits);
+        return ResponseEntity.ok(ApiResponse.ok(data));
+    }
+
+    private static ResponseEntity<ApiResponse<Map<String, Object>>> errorResponse(
+            HttpStatus status, String code, String message) {
+        return ResponseEntity.status(status).body(ApiResponse.error(status.value(),
+                (message == null ? "检索不可用" : message) + " (" + code + ")"));
+    }
+
+    /** input_json = {kb, query, top_k}（tasks.md T014）。 */
+    private static String auditInputJson(String name, String query, Integer topK) {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("kb", name);
+        input.put("query", query);
+        input.put("top_k", topK);
+        try {
+            return MAPPER.writeValueAsString(input);
+        } catch (Exception e) {
+            return "{\"error\":\"input_serialize_failed\"}";
+        }
+    }
+
+    private void auditTrial(String sessionId, String inputJson,
+                            KbSearchService.SearchResult result, boolean success) {
+        auditLog.recordToolInvocation(sessionId, "kb_search", inputJson,
+                result.auditJson(), success, success ? null : result.text(), result.durationMs());
     }
 
     private static Map<String, Object> summary(KbRecord kb, List<KbDocumentRecord> docs) {
